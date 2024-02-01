@@ -1,7 +1,18 @@
 require 'csv'
 
-CSV.foreach(("addresses.csv"), headers: true, col_sep: ",") do |row|
-    puts row 
-end 
+def readHeaders(filename)
+    file = CSV.read(Dir.getwd + "/" + filename)
+    headers = file[0]
+    return headers
 
-def readerHeaders()
+end
+
+def main()
+    print "Enter the filename: "
+    theFileName = gets.chomp()
+    header = readHeaders(theFileName)
+    print header
+    print "\n"
+end
+
+main()
