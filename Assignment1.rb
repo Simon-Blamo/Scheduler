@@ -59,8 +59,8 @@ end
 
 # Reads the Room details, returns a hashmap with the key-value pair with the keys being the building name,
 # and the value being ANOTHER hashmap with the key-value pair with its keys being the room number, and the
-# value of that being yet ANOTHER hashamp with the key-value pair with its keys being the attribute(column), and the
-# value being the value assigned for that row.
+# values of that being yet ANOTHER hashmap with the key-value pair with its keys being the attribute(column), and the
+# values being the value for that respective attribute for that row.
 def saveRoomDetails(fileName, attributes)
     buildingsHash = {}
     file = CSV.read(Dir.getwd + "/" + fileName)
