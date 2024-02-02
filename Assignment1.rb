@@ -71,7 +71,7 @@ def saveRoomDetails(fileName, attributes)
         for attr in 2 .. file[row].length-1
             roomDetails[attributes[attr]] = file[row][attr]
         end
-        buildingsHash[building] = {room => roomDetails}
+        buildingsHash[building][room] = roomDetails
     end
     return buildingsHash
 end
