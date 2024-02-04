@@ -4,6 +4,8 @@ require 'time'
 require './UserPreferences.rb'
 
 
+# Time Complexity: O(n)
+# Space Complexity: O(1)
 # Error checking function. Checks if filename given is valid.
 def fileNameGivenIsValid(fileName)
     if fileName.downcase == "exit"
@@ -14,8 +16,12 @@ def fileNameGivenIsValid(fileName)
     rescue
         return -1
     end
+    return 1
 end
 
+# Time Complexity: O(n)
+# Space Complexity: O(1)
+# Checks if timeInput given by user is in the PM or not/
 def inPM(s)
     if s.downcase == "pm"
         return true
@@ -23,6 +29,9 @@ def inPM(s)
     return false
 end
 
+# Time Complexity: O(1)
+# Space Complexity: O(1)
+# Convert a String Array to a Date object.
 def convertStringArrToDate(arr)
     year = arr[0].to_i
     month = arr[1].to_i
@@ -30,6 +39,9 @@ def convertStringArrToDate(arr)
     return Date.new(year, month, day)
 end
 
+# Time Complexity: O(n)
+# # Space Complexity: O(1)
+# Converts a String Array to a Time object.
 def convertStringArrToTime(year, month, day, arr)
     if inPM(arr[1]) == true
         hours = (arr[0].split(":")[0].to_i + 12)
@@ -45,6 +57,9 @@ def convertStringArrToTime(year, month, day, arr)
     return time
 end
 
+# Time Complexity: O(n)
+# Space Complexity: O(1)
+# Checks to see if date input by user is valid.
 def dateGivenIsValid(dateInput)
     givenDate = dateInput.split("-")
     if givenDate.length != 3
@@ -63,6 +78,9 @@ def dateGivenIsValid(dateInput)
     return day
 end
 
+# Time Complexity: O(n)
+# Space Complexity: O(1)
+# Checks to see if start time input by user is valid.
 def startTimeGivenIsValid(date, timeInput)
     validHourPeriods = ["am", "pm"]
     givenTime = timeInput.split
@@ -89,6 +107,10 @@ def startTimeGivenIsValid(date, timeInput)
     end
     return time
 end
+
+# Time Complexity: O(n)
+# Time Complexity: O(1)
+# Checks to see if duration input by user is valid.
 def durationTimeGivenIsValid(durationInput)
     givenTime = durationInput.split(":")
     if givenTime.length != 2
@@ -100,6 +122,9 @@ def durationTimeGivenIsValid(durationInput)
     return duration
 end
 
+# Time Complexity: O(n)
+# # Space Complexity: O(1)
+# Checks to see if attendees input by user is valid.
 def attendeesGivenIsValid(attendessInput)
     unacceptableChars = []
     for ascii in 0 .. 128
@@ -119,6 +144,8 @@ def attendeesGivenIsValid(attendessInput)
     return attendessInput.to_i
 end
 
+# Time Complexity: O(n)
+# # Space Complexity: O(1)
 # Read Columns of CSV
 def readAttributes(fileName)
     file = CSV.read(Dir.getwd + "/" + fileName)
@@ -126,6 +153,8 @@ def readAttributes(fileName)
     return attributes
 end
 
+# Time Complexity: O(n)
+# Space Complexity: O(1)
 # Input prompt function to Read the first CSV given.
 def getRoomsCSV()
     print "Enter the filename of the Rooms CSV (Enter EXIT to quit): "
@@ -145,6 +174,8 @@ def getRoomsCSV()
     return [theFileNameRoom, roomAttributes]
 end
 
+# Time Complexity: O(n)
+# Space Complexity: O(1)
 # Input prompt function to read the second CSV given.
 def getRoomsReservationCSV()
     print "Enter the filename of the Reserved Rooms CSV (Enter EXIT to quit): "
@@ -164,6 +195,8 @@ def getRoomsReservationCSV()
     return [theFileNameReservation, reservationAttributes]
 end
 
+# Time Complexity: O(n * m) where n is the number of rows in the files, and m is the number of attributes.
+# Space Complexity: O(n * m)
 # Reads the Room details, returns a hashmap with the key-value pair with the keys being the building name,
 # and the value being ANOTHER hashmap with the key-value pair with its keys being the room number, and the
 # values of that being yet ANOTHER hashmap with the key-value pair with its keys being the attribute(column), and the
@@ -187,7 +220,9 @@ def saveRoomDetails(fileName, attributes)
     return buildingsHash
 end
 
-# To be implemented.
+# Time Complexity: O(n * m) where n is the number of rows in the files, and m is the number of attributes.
+# Space Complexity: O(n * m)
+# Reads the reservation details, and updates the building hashmap.
 def saveRoomBooking(fileName, buildingsHash, attributes)
     file = CSV.read(Dir.getwd + "/" + fileName)
     for row in 1 .. file.length-1
@@ -217,7 +252,10 @@ def saveRoomBooking(fileName, buildingsHash, attributes)
     return buildingsHash
 end
 
-def getUserPrefences()
+# Time Complexity: O(n)
+# Space Complexity: O(1)
+# Function to get user's desired preferences for their upcoming event.
+def getUserPrefernces()
     print "Enter the desired date of your event (yyyy-mm-dd Format): "
     while true
         date = gets.chomp()
@@ -269,10 +307,13 @@ def getUserPrefences()
             break
         end
     end
-    prefences = UserPrefences.new(date, startTime, durationTime, attendees)
-    return prefences
+    preferences = UserPreferences.new(date, startTime, durationTime, attendees)
+    return preferences
 end
 
+# Time Complexity: Probably bad.
+# Space Complexity: Probably bad.
+# TBD
 def schedule(theBuildings, theUserPreferences)
     amountEating = theUserPreferences.getAttendees * 0.6
     amountWhoNeedsComputers = theUserPreferences.getAttendees * 0.1
@@ -287,5 +328,3 @@ def schedule(theBuildings, theUserPreferences)
         "Closing Session"
     ]
 end
-
-# Main Function.

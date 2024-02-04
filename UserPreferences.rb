@@ -1,4 +1,4 @@
-class UserPrefences
+class UserPreferences
   def initialize(evD, stT, dur, att)
     @eventDate = evD
     @startTime = stT
@@ -26,5 +26,4 @@ class UserPrefences
   def addToDuration(num)
     @duration = @duration + num
   end
-
 end

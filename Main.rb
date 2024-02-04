@@ -1,5 +1,8 @@
 require "./scheduler.rb"
 
+# Time Complexity: O(n * m)
+# Space Complexity: ???
+# Does the work.
 def main()
     tempArr = getRoomsCSV()
     theFileNameRoom = tempArr[0]
@@ -12,8 +15,8 @@ def main()
     buildings = saveRoomDetails(theFileNameRoom, roomAttributes)
     buildings = saveRoomBooking(theFileNameReservation, buildings, reservationAttributes)
 
-    userPrefences = getUserPrefences()
-    outputCSV = schedule(buildings, userPrefences)
+    userPreferences = getUserPreferences()
+    outputCSV = schedule(buildings, userPreferences)
 end
 
 main()
