@@ -1,6 +1,7 @@
 require 'csv'
 require 'date'
 require 'time'
+require './UserPreferences.rb'
 
 
 # Error checking function. Checks if filename given is valid.
@@ -23,7 +24,10 @@ def inPM(s)
 end
 
 def convertStringArrToDate(arr)
-    return Date.new(arr[0].to_i, arr[1].to_i, arr[2].to_i)
+    year = arr[0].to_i
+    month = arr[1].to_i
+    day = arr[2].to_i
+    return Date.new(year, month, day)
 end
 
 def convertStringArrToTime(year, month, day, arr)
@@ -52,6 +56,10 @@ def dateGivenIsValid(dateInput)
     rescue
         return -1
     end
+    currentDay = DateTime.now
+    if (currentDay > day)
+        return -1
+    end
     return day
 end
 
@@ -66,14 +74,49 @@ def startTimeGivenIsValid(date, timeInput)
         return -1
     end
 
-    hoursAndMins = givenTime[0].split(":")
-
+    if givenTime[0].split(":") != 2
+        return -1
+    end
+    hours = givenTime[0].split(":")[0]
+    minutes = givenTime[0].split(":")[1]
+    if !(hours.to_i > 0 and hours.to_i < 12) or !(minutes.to_i >= 0 and minutes.to_i < 60)
+        return -1
+    end
     begin
         time = Time.new(date.year, date.mon, date.mday, hoursAndMins[0], hoursAndMins[1], 0, "-5:00")
     rescue
         return -1
     end
     return time
+end
+def durationTimeGivenIsValid(durationInput)
+    givenTime = durationInput.split(":")
+    if givenTime.length != 2
+        return -1
+    end
+    hours = givenTime[0]
+    minutes = givenTime[1]
+    duration = [hours, minutes]
+    return duration
+end
+
+def attendeesGivenIsValid(attendessInput)
+    unacceptableChars = []
+    for ascii in 0 .. 128
+        if !(ascii >= 48 and ascii <= 57)
+            unacceptableChars.push(ascii.chr)
+        end
+    end
+    attendessInput.each_char{|c|
+        if unacceptableChars.include?(c)
+            return -1
+        end
+    }
+
+    if attendessInput.to_i < 1
+        return -1
+    end
+    return attendessInput.to_i
 end
 
 # Read Columns of CSV
@@ -88,7 +131,7 @@ def getRoomsCSV()
     print "Enter the filename of the Rooms CSV (Enter EXIT to quit): "
     while true
         theFileNameRoom = gets.chomp()
-        isValid = fileNameGivenIsValid(theFileNameRooms)
+        isValid = fileNameGivenIsValid(theFileNameRoom)
         if isValid == -1
             print "File \"" + theFileNameRoom + "\" found. Please make sure the file your entering is located within the same directory.\n\n"
             print "Enter the filename of the Rooms CSV (Enter EXIT to quit): "
@@ -128,12 +171,16 @@ end
 def saveRoomDetails(fileName, attributes)
     buildingsHash = {}
     file = CSV.read(Dir.getwd + "/" + fileName)
-    for row in 0 .. file.length-1
+    for row in 1 .. file.length-1
         roomDetails = {}
         building = file[row][0]
         room = file[row][1]
         for attr in 2 .. file[row].length-1
-            roomDetails[attributes[attr]] = file[row][attr]
+            value = file[row][attr]
+            if attributes[attr] == "Capacity"
+                value = value.to_i
+            end
+            roomDetails[attributes[attr]] = value
         end
         buildingsHash[building][room] = roomDetails
     end
@@ -143,25 +190,26 @@ end
 # To be implemented.
 def saveRoomBooking(fileName, buildingsHash, attributes)
     file = CSV.read(Dir.getwd + "/" + fileName)
-    for row in 0 .. file.length-1
-        roomDetails = {}
+    for row in 1 .. file.length-1
         building = file[row][0]
         room = file[row][1]
+        roomDetails = buildingsHash[building][room]
         year = ""
         month = ""
         day = ""
         for attr in 2 .. file[row].length-1
+            value = file[row][attr]
             if attributes[attr] == "Date"
-                dateArray = file[row][attr].split("-")
+                dateArray = value.split("-")
                 year = dateArray[0]
                 month = dateArray[1]
                 day = dateArray[2]
                 roomDetails[attributes[attr]] = convertStringArrToDate(dateArray)
             elsif attributes[attr] == "Time" or attributes[attr] == "During"
-                timeArray = file[row][attr].split(" ")
+                timeArray = value.split(" ")
                 roomDetails[attributes[attr]] = convertStringArrToTime(year, month, day, timeArray)
             else
-                roomDetails[attributes[attr]] = file[row][attr]
+                roomDetails[attributes[attr]] = value
             end
         end
         buildingsHash[building][room] = roomDetails
@@ -170,13 +218,13 @@ def saveRoomBooking(fileName, buildingsHash, attributes)
 end
 
 def getUserPrefences()
-    print "Enter the desired date of your event (e.g., yyyy-mm-dd): "
+    print "Enter the desired date of your event (yyyy-mm-dd Format): "
     while true
         date = gets.chomp()
         isValid = dateGivenIsValid(date)
         if isValid == -1
-            print "Date, " + date + "\", not valid.\n\n"
-            print "Enter the desired date of your event (e.g., yyyy-mm-dd): "
+            print "Date, \"" + date + "\", not valid.\n\n"
+            print "Enter the desired date of your event (yyyy-mm-dd Format): "
         else
             date = isValid
             break
@@ -188,26 +236,56 @@ def getUserPrefences()
         startTime = gets.chomp()
         isValid = startTimeGivenIsValid(startTime)
         if isValid == -1
-            print "Start time, " + startTime + "\", not valid.\n\n"
+            print "Start time, \"" + startTime + "\", not valid.\n\n"
             print "Enter the desired start time of your event (e.g., 1:00 PM): "
         else
             startTime = isValid
             break
         end
     end
+    print "\n\n"
+    print "Enter the duration of your event (e.g., 2:20): "
+    while true
+        durationTime = gets.chomp()
+        isValid = durationTimeGivenIsValid(durationTime)
+        if isValid == -1
+            print "Duration time, \"" + durationTime + "\", not valid.\n\n"
+            print "Enter the duration of your event (e.g., 2:20): "
+        else
+            durationTime = isValid
+            break
+        end
+    end
+    print "\n\n"
+    print "Enter the expected number of attendees (e.g., 25): "
+    while true
+        attendees = gets.chomp()
+        isValid = attendeesGivenIsValid(attendees)
+        if isValid == -1
+            print "Attendess number, " + attendees + "\", not valid.\n\n"
+            print "Enter the expected number of attendees (e.g., 25): "
+        else
+            attendees = isValid
+            break
+        end
+    end
+    prefences = UserPrefences.new(date, startTime, durationTime, attendees)
+    return prefences
+end
+
+def schedule(theBuildings, theUserPreferences)
+    amountEating = theUserPreferences.getAttendees * 0.6
+    amountWhoNeedsComputers = theUserPreferences.getAttendees * 0.1
+    additionalHoursNeededForMeal = theUserPreferences.getDuration/6
+    durationExtender = 4 + additionalHoursNeededForMeal;
+    theUserPreferences.addToDuration(durationExtender)
+
+    eventType = [
+        "Opening Session",
+        "Group Work",
+        "Meal",
+        "Closing Session"
+    ]
 end
 
 # Main Function.
-def main()
-    tempArr = GetRoomsCSV()
-    theFileNameRoom = tempArr[0]
-    roomAttributes = tempArr[1]
-
-    tempArr = GetRoomsReservationCSV()
-    theFileNameReservation = tempArr[0]
-    reservationAttributes = tempArr[1]
-    buildings = saveRoomDetails(theFileNameRoom, roomAttributes)
-    buildings = saveRoomBooking(theFileNameReservation, buildings, reservationAttributes)
-end
-
-main()
