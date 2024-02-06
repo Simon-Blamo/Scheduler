@@ -21,7 +21,7 @@ end
 
 # Time Complexity: O(n)
 # Space Complexity: O(1)
-# Checks if timeInput given by user is in the PM or not/
+# Checks if timeInput given by user is in the PM or not.
 def inPM(s)
     if s.downcase == "pm"
         return true
@@ -97,6 +97,7 @@ def startTimeGivenIsValid(date, timeInput)
     end
     hours = givenTime[0].split(":")[0]
     minutes = givenTime[0].split(":")[1]
+
     if !(hours.to_i > 0 and hours.to_i < 12) or !(minutes.to_i >= 0 and minutes.to_i < 60)
         return -1
     end
@@ -311,15 +312,32 @@ def getUserPrefernces()
     return preferences
 end
 
+def findOpeningRoom(building, userP)
+    
+end
+
+def canHaveMeals(building, amountEating)
+
+end
+
+def canHack(building, amountWhoNeedsComputer)
+
+end
+
+def computeAmountOfComputersInBuilding(building)
+
+end
+
 # Time Complexity: Probably bad.
 # Space Complexity: Probably bad.
 # TBD
 def schedule(theBuildings, theUserPreferences)
     amountEating = theUserPreferences.getAttendees * 0.6
     amountWhoNeedsComputers = theUserPreferences.getAttendees * 0.1
+    timeNeededForOpeningandClosingSession = 4
+    theUserPreferences.addToDuration(timeNeededForOpeningandClosingSession)
     additionalHoursNeededForMeal = theUserPreferences.getDuration/6
-    durationExtender = 4 + additionalHoursNeededForMeal;
-    theUserPreferences.addToDuration(durationExtender)
+    theUserPreferences.addToDuration(additionalHoursNeededForMeal)
 
     eventType = [
         "Opening Session",
@@ -327,4 +345,8 @@ def schedule(theBuildings, theUserPreferences)
         "Meal",
         "Closing Session"
     ]
+
+    theBuildings.each do |key, value|
+
+    end
 end
