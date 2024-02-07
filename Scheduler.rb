@@ -58,6 +58,16 @@ def convertStringArrToTime(year, month, day, arr)
 end
 
 # Time Complexity: O(n)
+# # Space Complexity: O(1)
+# Converts a String Array to a Time object (Modified for the duration attribute).
+def convertStringArrToTimeDuration(startTime, arr)
+    time = startTime
+    time += (arr[0].to_i * 60 * 60)
+    time += (arr[1].to_i * 60)
+    return time
+end
+
+# Time Complexity: O(n)
 # Space Complexity: O(1)
 # Checks to see if date input by user is valid.
 def dateGivenIsValid(dateInput)
@@ -123,26 +133,103 @@ def durationTimeGivenIsValid(durationInput)
     return duration
 end
 
+def validCapacityValue(val)
+    return (val.to_i > 0)
+end
+
+def validFoodAllowedValue(val)
+    arr = ["yes", "no"]
+    return arr.include?(val.downcase)
+end
+
+def validComputersAvailableValue(val)
+    arr = ["yes", "no"]
+    return arr.include?(val.downcase)
+end
+
 # Time Complexity: O(n)
 # # Space Complexity: O(1)
 # Checks to see if attendees input by user is valid.
-def attendeesGivenIsValid(attendessInput)
+def valueGivenIsValidNumeric(input)
     unacceptableChars = []
     for ascii in 0 .. 128
         if !(ascii >= 48 and ascii <= 57)
             unacceptableChars.push(ascii.chr)
         end
     end
-    attendessInput.each_char{|c|
+    input.each_char{|c|
         if unacceptableChars.include?(c)
             return -1
         end
     }
 
-    if attendessInput.to_i < 1
+    if input.to_i < 1
         return -1
     end
-    return attendessInput.to_i
+    return input.to_i
+end
+
+def timeSlotIsValid(timeSlotArray, potentialTime)
+    for el in 0 .. timeSlotArray.length - 1
+        if potentialTime.between?(el[0], el[1]) == true
+            return false
+        end
+    end
+    return true
+end
+
+def handleConflict1(conflictVal, attributeWhereConflictFound, rowWhereConflictFound, index)
+    print "ERROR\n"
+    print "\nConflict found in row:\n\n"
+    print rowWhereConflictFound
+    print "\n\n Value,\"" + conflictVal + "\", is not valid for attribute \"" + attributeWhereConflictFound +"\"\n\n"
+    print "If correct value known, enter below. \nIf the correct value is not known, enter \"X\". The row will be dropped. \nEnter value: "
+    while true
+        if attributeWhereConflictFound.downcase == "capacity"
+            response = gets.chomp()
+            if response.downcase == "x"
+                print "Conflict resolved! Row has been dropped. CSV processing shall continue.\n\n"
+                return 0
+            elsif valueGivenIsValidNumeric(response) == -1
+                print "Invalid response. Please enter something valid."
+                print "If correct value known, enter below. \nIf the correct value is not known, enter \"X\". The row will be dropped. \nEnter value: "
+            else
+                print "Conflict resolved! Value for \"Capacity\" has been updated! CSV processing shall continue.\n\n"
+                break
+            end
+        elsif attributeWhereConflictFound.downcase == "computers available"
+            response = gets.chomp()
+            if response.downcase == "x"
+                print "Conflict resolved! Row has been dropped. CSV processing shall continue.\n\n"
+                return 0
+            elsif validComputersAvailableValue(response) == false
+                print "Invalid response. Please enter something valid."
+                print "If correct value known, enter below. \nIf the correct value is not known, enter \"X\". The row will be dropped. \nEnter value: "
+            else
+                print "Conflict resolved! Value for \"Computers Available\" has been updated! CSV processing shall continue.\n\n"
+                break
+            end
+        else
+            response = gets.chomp()
+            if response.downcase == "x"
+                print "Conflict resolved! Row has been dropped. CSV processing shall continue.\n\n"
+                return 0
+            elsif validFoodAllowedValue(response) == false
+                print "Invalid response. Please enter something valid."
+                print "If correct value known, enter below. \nIf the correct value is not known, enter \"X\". The row will be dropped. \nEnter value: "
+            else
+                print "Conflict resolved! Value for \"Food Allowed\" has been updated! CSV processing shall continue.\n\n"
+                break
+            end
+        end
+    end
+    rowWhereConflictFound[index] = response
+    return rowWhereConflictFound
+
+end
+
+def handleConflict2
+
 end
 
 # Time Complexity: O(n)
@@ -182,9 +269,9 @@ def getRoomsReservationCSV()
     print "Enter the filename of the Reserved Rooms CSV (Enter EXIT to quit): "
     while true
         theFileNameReservation = gets.chomp()
-        isValid = fileNameGivenIsValid(theFileNameRoomReservation)
+        isValid = fileNameGivenIsValid(theFileNameReservation)
         if isValid == -1
-            print "File \"" + theFileNameRoomReservation + "\" found. Please make sure the file your entering is located within the same directory.\n\n"
+            print "File \"" + theFileNameReservation + "\" found. Please make sure the file your entering is located within the same directory.\n\n"
             print "Enter the filename of the Reserved Rooms CSV (Enter EXIT to quit): "
         elsif isValid == 0
             exit
@@ -212,11 +299,45 @@ def saveRoomDetails(fileName, attributes)
         for attr in 2 .. file[row].length-1
             value = file[row][attr]
             if attributes[attr] == "Capacity"
+                if validCapacityValue(value) == false
+                    results = handleConflict1(value, attributes[attr], file[row], attr)
+                    if results == 0
+                        next
+                    else
+                        file[row] = results
+                        value = file[row][attr]
+                    end
+                end
                 value = value.to_i
+            elsif attributes[attr] == "Food Allowed"
+                if validFoodAllowedValue(value) == false
+                    results = handleConflict1(value, attributes[attr], file[row], attr)
+                    if results == 0
+                        next
+                    else
+                        file[row] = results
+                        value = file[row][attr]
+                    end
+                end
+            elsif attributes[attr] == "Computers Available"
+                if validComputersAvailableValue(value) == false
+                    results = handleConflict1(value, attributes[attr], file[row], attr)
+                    if results == 0
+                        next
+                    else
+                        file[row] = results
+                        value = file[row][attr]
+                    end
+                end
             end
             roomDetails[attributes[attr]] = value
         end
-        buildingsHash[building][room] = roomDetails
+        if buildingsHash.has_key?(building) == false
+            buildingsHash[:building] = {room: roomDetails}
+        else
+            buildingsHash[building][room] = roomDetails
+        end
+
     end
     return buildingsHash
 end
@@ -233,6 +354,7 @@ def saveRoomBooking(fileName, buildingsHash, attributes)
         year = ""
         month = ""
         day = ""
+        pendingTimeAddition = []
         for attr in 2 .. file[row].length-1
             value = file[row][attr]
             if attributes[attr] == "Date"
@@ -242,13 +364,33 @@ def saveRoomBooking(fileName, buildingsHash, attributes)
                 day = dateArray[2]
                 roomDetails[attributes[attr]] = convertStringArrToDate(dateArray)
             elsif attributes[attr] == "Time" or attributes[attr] == "During"
-                timeArray = value.split(" ")
-                roomDetails[attributes[attr]] = convertStringArrToTime(year, month, day, timeArray)
+                if attributes[attr] == "Time"
+                    if roomDetails.has_key?("timeSlotArray") == false
+                        roomDetails["timeSlotArray"] = []
+                    end
+                    timeArray = value.split(" ")
+                    #roomDetails[attributes[attr]] = convertStringArrToTime(year, month, day, timeArray)
+                    pendingTimeAddition.push(convertStringArrToTime(year, month, day, timeArray))
+                    if timeSlotIsValid(roomDetails["timeSlotArray"], pendingTimeAddition[0]) == false
+                        roomDetails = -1
+                        break
+                    end
+                else
+                    eventEnd = convertStringArrToTimeDuration(pendingTimeAddition[0], value.split(":"))
+                    if timeSlotIsValid(roomDetails["timeSlotArray"], eventEnd) == false
+                        roomDetails = -1
+                        break
+                    end
+                    pendingTimeAddition.push(eventEnd)
+                end
             else
                 roomDetails[attributes[attr]] = value
             end
         end
-        buildingsHash[building][room] = roomDetails
+        if roomDetails != -1
+            roomDetails["timeSlotArray"].push(pendingTimeAddition)
+            buildingsHash[building][room] = roomDetails
+        end
     end
     return buildingsHash
 end
@@ -299,7 +441,7 @@ def getUserPrefernces()
     print "Enter the expected number of attendees (e.g., 25): "
     while true
         attendees = gets.chomp()
-        isValid = attendeesGivenIsValid(attendees)
+        isValid = valueGivenIsValidNumeric(attendees)
         if isValid == -1
             print "Attendess number, " + attendees + "\", not valid.\n\n"
             print "Enter the expected number of attendees (e.g., 25): "
@@ -312,18 +454,22 @@ def getUserPrefernces()
     return preferences
 end
 
+# need to finish
 def findOpeningRoom(building, userP)
-    
+
 end
 
+# need to finish
 def canHaveMeals(building, amountEating)
 
 end
 
+# need to finish
 def canHack(building, amountWhoNeedsComputer)
 
 end
 
+# need to finish
 def computeAmountOfComputersInBuilding(building)
 
 end
