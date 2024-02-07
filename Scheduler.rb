@@ -58,7 +58,7 @@ def convertStringArrToTime(year, month, day, arr)
 end
 
 # Time Complexity: O(n)
-# # Space Complexity: O(1)
+# Space Complexity: O(1)
 # Converts a String Array to a Time object (Modified for the duration attribute).
 def convertStringArrToTimeDuration(startTime, arr)
     time = startTime
@@ -169,6 +169,7 @@ def valueGivenIsValidNumeric(input)
     return input.to_i
 end
 
+# need to explain and refine
 def timeSlotIsValid(timeSlotArray, potentialTime)
     for el in 0 .. timeSlotArray.length - 1
         if potentialTime.between?(el[0], el[1]) == true
@@ -178,6 +179,7 @@ def timeSlotIsValid(timeSlotArray, potentialTime)
     return true
 end
 
+# need to explain and refine
 def handleConflict1(conflictVal, attributeWhereConflictFound, rowWhereConflictFound, index)
     print "ERROR\n"
     print "\nConflict found in row:\n\n"
@@ -228,12 +230,13 @@ def handleConflict1(conflictVal, attributeWhereConflictFound, rowWhereConflictFo
 
 end
 
+# need to implement
 def handleConflict2
 
 end
 
 # Time Complexity: O(n)
-# # Space Complexity: O(1)
+# Space Complexity: O(1)
 # Read Columns of CSV
 def readAttributes(fileName)
     file = CSV.read(Dir.getwd + "/" + fileName)
@@ -283,7 +286,7 @@ def getRoomsReservationCSV()
     return [theFileNameReservation, reservationAttributes]
 end
 
-# Time Complexity: O(n * m) where n is the number of rows in the files, and m is the number of attributes.
+# Time Complexity: ??? where n is the number of rows in the files, and m is the number of attributes.
 # Space Complexity: O(n * m)
 # Reads the Room details, returns a hashmap with the key-value pair with the keys being the building name,
 # and the value being ANOTHER hashmap with the key-value pair with its keys being the room number, and the
