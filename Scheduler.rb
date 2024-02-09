@@ -124,13 +124,24 @@ def saveRoomDetails(fileName, attributes)
         roomDetails = {}
         building = file[row][0]
         room = file[row][1]
+        if validRoomValue(room) == false
+            results = handleConflict1(room, "Room", file[row], 1)
+            if results == 0
+                value = nil
+                break
+            else
+                file[row] = results
+                value = file[row][attr]
+            end
+        end
         for attr in 2 .. file[row].length-1
             value = file[row][attr]
             if attributes[attr] == "Capacity"
                 if validCapacityValue(value) == false
                     results = handleConflict1(value, attributes[attr], file[row], attr)
                     if results == 0
-                        next
+                        value = nil
+                        break
                     else
                         file[row] = results
                         value = file[row][attr]
@@ -141,7 +152,8 @@ def saveRoomDetails(fileName, attributes)
                 if validFoodAllowedValue(value) == false
                     results = handleConflict1(value, attributes[attr], file[row], attr)
                     if results == 0
-                        next
+                        value = nil
+                        break
                     else
                         file[row] = results
                         value = file[row][attr]
@@ -151,7 +163,19 @@ def saveRoomDetails(fileName, attributes)
                 if validComputersAvailableValue(value) == false
                     results = handleConflict1(value, attributes[attr], file[row], attr)
                     if results == 0
-                        next
+                        value = nil
+                        break
+                    else
+                        file[row] = results
+                        value = file[row][attr]
+                    end
+                end
+            elsif attributes[attr] == "Seating Type"
+                if validSeatingTypeValue(value) == false
+                    results = handleConflict1(value, attributes[attr], file[row], attr)
+                    if results == 0
+                        value = nil
+                        break
                     else
                         file[row] = results
                         value = file[row][attr]
@@ -160,10 +184,20 @@ def saveRoomDetails(fileName, attributes)
             end
             roomDetails[attributes[attr]] = value
         end
+
         if buildingsHash.has_key?(building) == false
-            buildingsHash[building] = {room => roomDetails}
+            if value == nil
+                buildingsHash.delete(room)
+            else 
+                buildingsHash[building] = {room => roomDetails}
+            end
+            
         else
-            buildingsHash[building][room] = roomDetails
+            if value == nil
+                buildingsHash.delete(room)
+            else
+                buildingsHash[building][room] = roomDetails
+            end
         end
 
     end
@@ -178,7 +212,12 @@ def saveRoomBooking(fileName, buildingsHash, attributes)
     for row in 1 .. file.length-1
         building = file[row][0]
         room = file[row][1]
-        roomDetails = buildingsHash[building][room]
+        begin
+            roomDetails = buildingsHash[building][room]
+        rescue 
+            next
+
+        end
         year = ""
         month = ""
         day = ""
@@ -195,14 +234,20 @@ def saveRoomBooking(fileName, buildingsHash, attributes)
                     roomDetails = -1
                     break
                 end
-                roomDetails[attributes[attr]] = date
+
+                begin
+                    roomDetails[attributes[attr]] = date
+                rescue 
+                    roomDetails = -1
+                    break
+                end
             elsif attributes[attr] == "Time" or attributes[attr] == "Duration"
                 if attributes[attr] == "Time"
                     if roomDetails.has_key?("timeSlotArray") == false
                         roomDetails["timeSlotArray"] = []
                     end
                     timeArray = value.split(" ")
-                    #roomDetails[attributes[attr]] = convertStringArrToTime(year, month, day, timeArray)
+                    roomDetails[attributes[attr]] = convertStringArrToTime(year, month, day, timeArray)
                     pendingTimeAddition.push(convertStringArrToTime(year, month, day, timeArray))
                     if timeSlotIsValid(roomDetails["timeSlotArray"], pendingTimeAddition[0]) == false
                         roomDetails = -1
@@ -210,6 +255,7 @@ def saveRoomBooking(fileName, buildingsHash, attributes)
                     end
                 else
                     eventEnd = convertStringArrToTimeDuration(pendingTimeAddition[0], value.split(":"))
+                    roomDetails[attributes[attr]] = eventEnd
                     if timeSlotIsValid(roomDetails["timeSlotArray"], eventEnd) == false
                         roomDetails = -1
                         break
@@ -223,6 +269,8 @@ def saveRoomBooking(fileName, buildingsHash, attributes)
         if roomDetails != -1
             roomDetails["timeSlotArray"].push(pendingTimeAddition)
             buildingsHash[building][room] = roomDetails
+        else
+            buildingsHash[building].delete(room)
         end
     end
     return buildingsHash
@@ -386,7 +434,7 @@ def findMealRooms(buildings, mealAttendees, arrOfMealTimes, eventType)
             end
         end
     end
-    selected_rooms if current_capacity >= meal_attendees
+    return nil
 end
 
 def findHackRooms(buildings, computersNeeded, arrOfHackTimes, eventType)
@@ -401,7 +449,6 @@ def findHackRooms(buildings, computersNeeded, arrOfHackTimes, eventType)
                 tsArr = details["timeSlotArray"]
                 next unless ((timeSlotIsValid(tsArr, arrOfHackTimes[el][0]) == true) and (timeSlotIsValid(tsArr, arrOfHackTimes[el][1]) == true))
                 currentCapacity += details["Capacity"]
-                # return selected_rooms if current_capacity >= computer_needed
                 validRooms.push(building, room, details, [arrOfHackTimes[el][0], arrOfHackTimes[el][1]], eventType)
                 if currentCapacity >= computersNeeded
                     arrayOfHackRooms.push(validRooms)
@@ -445,12 +492,7 @@ def schedule(userPreferences, buildings)
         print "Cannot generate schedule! No room matches opening room constraints!\n"
         exit
     end
-    # print openingRoomDetailArr[0]
-    # print "\n"
-    # print openingRoomDetailArr[1]
-    # print "\n"
-    # print openingRoomDetailArr[2]
-    # print "\n"
+
 
     closingRoomDetailArr = findRoomForAll(buildings, totalAttendees, closingSeshTimeArr, eventType[3])
     if closingRoomDetailArr == nil
@@ -496,7 +538,6 @@ def formatForOutputCSV(hashMap, attributes)
     openingRow = []
     closingRow = []
     hackingRows = []
-    #hashMap[:meals]
     hacks = hashMap[:hacks]
     for attr in 0 .. attributes.length-1
         if attributes[attr] == "Date"
@@ -572,8 +613,6 @@ def formatForOutputCSV(hashMap, attributes)
                 end
             mealsArr.push(mealRow)
         end
-        print mealsArr
-        print "\n\n"
         return [openingRow, closingRow, hackingRows, mealsArr]
     end
     return [openingRow, closingRow, hackingRows]

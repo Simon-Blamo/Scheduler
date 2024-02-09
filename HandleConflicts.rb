@@ -111,6 +111,15 @@ def validComputersAvailableValue(val)
   return arr.include?(val.downcase)
 end
 
+def validSeatingTypeValue(val)
+    arr = ["tiered", "level"]
+    return arr.include?(val.downcase)
+end
+
+def validRoomValue(val)
+    return val.to_i > 0
+end
+
 def areAcceptableChars(s)
   unacceptableChars = []
   for ascii in 0 .. 128
@@ -158,7 +167,7 @@ def handleConflict1(conflictVal, attributeWhereConflictFound, rowWhereConflictFo
   print "ERROR\n"
   print "\nConflict found in row:\n\n"
   print rowWhereConflictFound
-  print "\n\n Value,\"" + conflictVal + "\", is not valid for attribute \"" + attributeWhereConflictFound +".\"\n\n"
+  print "\n\n Value, \"" + conflictVal + "\", is not valid for attribute \"" + attributeWhereConflictFound +".\"\n\n"
   print "If correct value known, enter below. \nIf the correct value is not known, enter \"X\". The row will be dropped. \nEnter value: "
   while true
       if attributeWhereConflictFound.downcase == "capacity"
