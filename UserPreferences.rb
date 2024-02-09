@@ -1,8 +1,9 @@
 class UserPreferences
-  def initialize(evD, stT, dur, att)
+  def initialize(evD, stT, dur, dur2, att)
     @eventDate = evD
     @startTime = stT
     @duration = dur
+    @duration2 = dur2
     @attendees = att
   end
 
@@ -19,11 +20,12 @@ class UserPreferences
     @duration
   end
 
+  def getDuration2
+    @duration2
+  end
+
   def getAttendees
     @attendees
   end
 
-  def addToDuration(num)
-    @duration = @duration + num
-  end
 end

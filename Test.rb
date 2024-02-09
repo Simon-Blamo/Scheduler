@@ -20,5 +20,5 @@ print "\n"
 timeEx = Time.new(2002, 10, 31, 2, 2, 2)
 puts timeEx
 
-timeEx += ((5 * 60))
+timeEx += ((5 * (60 * 60)))
 puts timeEx

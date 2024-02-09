@@ -1,23 +1,8 @@
-require 'csv'
-require 'date'
-require 'time'
+require './HandleConflicts.rb'
 require './UserPreferences.rb'
 
 
-# Time Complexity: O(n)
-# Space Complexity: O(1)
-# Error checking function. Checks if filename given is valid.
-def fileNameGivenIsValid(fileName)
-    if fileName.downcase == "exit"
-        return 0
-    end
-    begin
-        CSV.read(Dir.getwd + "/" + fileName)
-    rescue
-        return -1
-    end
-    return 1
-end
+
 
 # Time Complexity: O(n)
 # Space Complexity: O(1)
@@ -36,6 +21,9 @@ def convertStringArrToDate(arr)
     year = arr[0].to_i
     month = arr[1].to_i
     day = arr[2].to_i
+    if ((year < 1) or (year > 2024)) or ((day < 1) or (day > 31)) or ((month < 1) or (month > 12))
+        return -1
+    end
     return Date.new(year, month, day)
 end
 
@@ -47,12 +35,12 @@ def convertStringArrToTime(year, month, day, arr)
         hours = (arr[0].split(":")[0].to_i + 12)
         hours = hours == 24 ? 12 : hours
         minutes = arr[0].split(":")[1].to_i
-        time = Time.new(year.to_i, month.to_i, day.to_i, hours, minutes, 0, "-5:00")
+        time = Time.new(year.to_i, month.to_i, day.to_i, hours, minutes, 0)
     else
         hours = (arr[0].split(":")[0].to_i)
         hours = hours == 12 ? 0 : hours
         minutes = arr[0].split(":")[1].to_i
-        time = Time.new(year.to_i, month.to_i, day.to_i, hours, minutes, 0, "-5:00")
+        time = Time.new(year.to_i, month.to_i, day.to_i, hours, minutes, 0,)
     end
     return time
 end
@@ -65,169 +53,6 @@ def convertStringArrToTimeDuration(startTime, arr)
     time += (arr[0].to_i * 60 * 60)
     time += (arr[1].to_i * 60)
     return time
-end
-
-# Time Complexity: O(n)
-# Space Complexity: O(1)
-# Checks to see if date input by user is valid.
-def dateGivenIsValid(dateInput)
-    givenDate = dateInput.split("-")
-    if givenDate.length != 3
-        return -1
-    end
-
-    begin
-        day = convertStringArrToDate(givenDate)
-    rescue
-        return -1
-    end
-    currentDay = DateTime.now
-    if (currentDay > day)
-        return -1
-    end
-    return day
-end
-
-# Time Complexity: O(n)
-# Space Complexity: O(1)
-# Checks to see if start time input by user is valid.
-def startTimeGivenIsValid(date, timeInput)
-    validHourPeriods = ["am", "pm"]
-    givenTime = timeInput.split
-    if givenTime.length != 2
-        return -1
-    end
-
-    if validHourPeriods.include?(givenTime[1].downcase) == false
-        return -1
-    end
-
-    if givenTime[0].split(":") != 2
-        return -1
-    end
-    hours = givenTime[0].split(":")[0]
-    minutes = givenTime[0].split(":")[1]
-
-    if !(hours.to_i > 0 and hours.to_i < 12) or !(minutes.to_i >= 0 and minutes.to_i < 60)
-        return -1
-    end
-    begin
-        time = Time.new(date.year, date.mon, date.mday, hoursAndMins[0], hoursAndMins[1], 0, "-5:00")
-    rescue
-        return -1
-    end
-    return time
-end
-
-# Time Complexity: O(n)
-# Time Complexity: O(1)
-# Checks to see if duration input by user is valid.
-def durationTimeGivenIsValid(durationInput)
-    givenTime = durationInput.split(":")
-    if givenTime.length != 2
-        return -1
-    end
-    hours = givenTime[0]
-    minutes = givenTime[1]
-    duration = [hours, minutes]
-    return duration
-end
-
-def validCapacityValue(val)
-    return (val.to_i > 0)
-end
-
-def validFoodAllowedValue(val)
-    arr = ["yes", "no"]
-    return arr.include?(val.downcase)
-end
-
-def validComputersAvailableValue(val)
-    arr = ["yes", "no"]
-    return arr.include?(val.downcase)
-end
-
-# Time Complexity: O(n)
-# # Space Complexity: O(1)
-# Checks to see if attendees input by user is valid.
-def valueGivenIsValidNumeric(input)
-    unacceptableChars = []
-    for ascii in 0 .. 128
-        if !(ascii >= 48 and ascii <= 57)
-            unacceptableChars.push(ascii.chr)
-        end
-    end
-    input.each_char{|c|
-        if unacceptableChars.include?(c)
-            return -1
-        end
-    }
-
-    if input.to_i < 1
-        return -1
-    end
-    return input.to_i
-end
-
-# need to explain and refine
-def timeSlotIsValid(timeSlotArray, potentialTime)
-    for el in 0 .. timeSlotArray.length - 1
-        if potentialTime.between?(el[0], el[1]) == true
-            return false
-        end
-    end
-    return true
-end
-
-# need to explain and refine
-def handleConflict1(conflictVal, attributeWhereConflictFound, rowWhereConflictFound, index)
-    print "ERROR\n"
-    print "\nConflict found in row:\n\n"
-    print rowWhereConflictFound
-    print "\n\n Value,\"" + conflictVal + "\", is not valid for attribute \"" + attributeWhereConflictFound +"\"\n\n"
-    print "If correct value known, enter below. \nIf the correct value is not known, enter \"X\". The row will be dropped. \nEnter value: "
-    while true
-        if attributeWhereConflictFound.downcase == "capacity"
-            response = gets.chomp()
-            if response.downcase == "x"
-                print "Conflict resolved! Row has been dropped. CSV processing shall continue.\n\n"
-                return 0
-            elsif valueGivenIsValidNumeric(response) == -1
-                print "Invalid response. Please enter something valid."
-                print "If correct value known, enter below. \nIf the correct value is not known, enter \"X\". The row will be dropped. \nEnter value: "
-            else
-                print "Conflict resolved! Value for \"Capacity\" has been updated! CSV processing shall continue.\n\n"
-                break
-            end
-        elsif attributeWhereConflictFound.downcase == "computers available"
-            response = gets.chomp()
-            if response.downcase == "x"
-                print "Conflict resolved! Row has been dropped. CSV processing shall continue.\n\n"
-                return 0
-            elsif validComputersAvailableValue(response) == false
-                print "Invalid response. Please enter something valid."
-                print "If correct value known, enter below. \nIf the correct value is not known, enter \"X\". The row will be dropped. \nEnter value: "
-            else
-                print "Conflict resolved! Value for \"Computers Available\" has been updated! CSV processing shall continue.\n\n"
-                break
-            end
-        else
-            response = gets.chomp()
-            if response.downcase == "x"
-                print "Conflict resolved! Row has been dropped. CSV processing shall continue.\n\n"
-                return 0
-            elsif validFoodAllowedValue(response) == false
-                print "Invalid response. Please enter something valid."
-                print "If correct value known, enter below. \nIf the correct value is not known, enter \"X\". The row will be dropped. \nEnter value: "
-            else
-                print "Conflict resolved! Value for \"Food Allowed\" has been updated! CSV processing shall continue.\n\n"
-                break
-            end
-        end
-    end
-    rowWhereConflictFound[index] = response
-    return rowWhereConflictFound
-
 end
 
 # need to implement
@@ -336,7 +161,7 @@ def saveRoomDetails(fileName, attributes)
             roomDetails[attributes[attr]] = value
         end
         if buildingsHash.has_key?(building) == false
-            buildingsHash[:building] = {room: roomDetails}
+            buildingsHash[building] = {room => roomDetails}
         else
             buildingsHash[building][room] = roomDetails
         end
@@ -365,8 +190,13 @@ def saveRoomBooking(fileName, buildingsHash, attributes)
                 year = dateArray[0]
                 month = dateArray[1]
                 day = dateArray[2]
-                roomDetails[attributes[attr]] = convertStringArrToDate(dateArray)
-            elsif attributes[attr] == "Time" or attributes[attr] == "During"
+                date = convertStringArrToDate(dateArray)
+                if date == -1
+                    roomDetails = -1
+                    break
+                end
+                roomDetails[attributes[attr]] = date
+            elsif attributes[attr] == "Time" or attributes[attr] == "Duration"
                 if attributes[attr] == "Time"
                     if roomDetails.has_key?("timeSlotArray") == false
                         roomDetails["timeSlotArray"] = []
@@ -401,7 +231,7 @@ end
 # Time Complexity: O(n)
 # Space Complexity: O(1)
 # Function to get user's desired preferences for their upcoming event.
-def getUserPrefernces()
+def getUserPreferences()
     print "Enter the desired date of your event (yyyy-mm-dd Format): "
     while true
         date = gets.chomp()
@@ -418,7 +248,7 @@ def getUserPrefernces()
     print "Enter the desired start time of your event (e.g., 1:00 PM): "
     while true
         startTime = gets.chomp()
-        isValid = startTimeGivenIsValid(startTime)
+        isValid = startTimeGivenIsValid(date, startTime)
         if isValid == -1
             print "Start time, \"" + startTime + "\", not valid.\n\n"
             print "Enter the desired start time of your event (e.g., 1:00 PM): "
@@ -431,12 +261,13 @@ def getUserPrefernces()
     print "Enter the duration of your event (e.g., 2:20): "
     while true
         durationTime = gets.chomp()
-        isValid = durationTimeGivenIsValid(durationTime)
+        isValid = durationTimeGivenIsValid(startTime, durationTime)
         if isValid == -1
             print "Duration time, \"" + durationTime + "\", not valid.\n\n"
             print "Enter the duration of your event (e.g., 2:20): "
         else
-            durationTime = isValid
+            durationTime = isValid[0]
+            duration2 = isValid[1]
             break
         end
     end
@@ -453,49 +284,297 @@ def getUserPrefernces()
             break
         end
     end
-    preferences = UserPreferences.new(date, startTime, durationTime, attendees)
+    preferences = UserPreferences.new(date, startTime, durationTime, duration2, attendees)
     return preferences
 end
 
-# need to finish
-def findOpeningRoom(building, userP)
+def breakUpEvent(duration, startTime)
+    if duration[0].to_i * 60  < 300
+        return nil
+    end
 
+    openSeshStartTime = startTime
+    openSeshEndTime = (openSeshStartTime + (60 * 60))
+
+    mealEventsNeeded = (duration[0].to_i)/6.0
+    if mealEventsNeeded <= 1.0
+        hackStartTime = openSeshEndTime
+        hackEndTime = hackStartTime + ((duration[0].to_i - 4) + (60 * 60))
+        closeSeshStartTime = hackEndTime
+        closeSeshEndTime = closeSeshStartTime + ((3) + (60 * 60))
+        return {
+            openingSessionTime: [openSeshStartTime, openSeshEndTime],
+            hackTimes: [hackStartTime, hackEndTime],
+            closingSessionTime: [closeSeshStartTime, closeSeshEndTime],
+        }
+    else
+        timeAllocatedForOtherActivities = (duration[0].to_i) - 4
+        mealEventsToAccountFor = mealEventsNeeded.floor()
+        numberOfHackSessionsToAccountFor = timeAllocatedForOtherActivities / mealEventsToAccountFor
+        hackSessionDurations = numberOfHackSessionsToAccountFor - 1
+
+        hackTimesArr = []
+        mealTimesArr = []
+
+        loopHackStartTime = openSeshEndTime
+        finalEndTime = nil
+        while (numberOfHackSessionsToAccountFor != 0) and (mealEventsToAccountFor != 0)
+            if  numberOfHackSessionsToAccountFor != 0
+                tempArr = []
+                tempArr.push(loopHackStartTime)
+                loopHackEndTime =  loopHackStartTime += (hackSessionDurations * (60 * 60))
+                tempArr.push(loopHackEndTime)
+                numberOfHackSessionsToAccountFor -= 1
+                hackTimesArr.push(tempArr)
+                tempArr = nil
+                finalEndTime = loopHackEndTime
+            end
+            if mealEventsToAccountFor != 0
+                tempArr = []
+                loopMealStartTime = loopHackEndTime
+                tempArr.push(loopMealStartTime)
+                loopMealEndTime = loopMealStartTime + (60 * 60)
+                tempArr.push(loopMealEndTime)
+                mealEventsToAccountFor -= 1
+                mealTimesArr.push(tempArr)
+                tempArr = nil
+                loopHackStartTime = loopMealEndTime
+                finalEndTime = loopMealEndTime
+            end
+        end
+
+        closeSeshStartTime = finalEndTime
+        closeSeshEndTime = closeSeshStartTime + (3 * (60 * 60))
+
+        return {
+            openingSessionTime: [openSeshStartTime, openSeshEndTime],
+            closingSessionTime: [closeSeshStartTime, closeSeshEndTime],
+            mealTimes: mealTimesArr,
+            hackTimes: hackTimesArr
+        }
+    end
 end
 
-# need to finish
-def canHaveMeals(building, amountEating)
-
+def findRoomForAll(buildings, totalAttendees, sessionArray, eventType)
+    buildings.each do |building, rooms|
+        rooms.each do |room, details|
+            tsArr = details["timeSlotArray"]
+            return [building, room, details, [sessionArray[0], sessionArray[1]], eventType] if details["Capacity"] >= totalAttendees and ((timeSlotIsValid(tsArr, sessionArray[0]) == true) and (timeSlotIsValid(tsArr, sessionArray[1]) == true))
+        end
+    end
+    return nil
 end
 
-# need to finish
-def canHack(building, amountWhoNeedsComputer)
-
+def findMealRooms(buildings, mealAttendees, arrOfMealTimes, eventType)
+    arrayOfMealRooms = []
+    buildings.each do |building, rooms|
+        rooms.each do |room, details|
+            next unless details["Food Allowed"].downcase == "yes"
+            length = arrayOfMealRooms.length
+            for times in 0 .. arrOfMealTimes.length - 1
+                tsArr = details["timeSlotArray"]
+                arrayOfMealRooms.push([building, room, details, [arrOfMealTimes[times][0], arrOfMealTimes[times][1]], eventType]) if details["Capacity"] >= mealAttendees and ((timeSlotIsValid(tsArr, arrOfMealTimes[times][0]) == true) and (timeSlotIsValid(tsArr, arrOfMealTimes[times][1]) == true))
+                if arrayOfMealRooms.length > length
+                    break
+                end
+            end
+            if arrayOfMealRooms == length
+                return nil
+            else
+                arrOfMealTimes.shift
+                return arrayOfMealRooms if arrOfMealTimes.length == 0
+            end
+        end
+    end
+    selected_rooms if current_capacity >= meal_attendees
 end
 
-# need to finish
-def computeAmountOfComputersInBuilding(building)
-
+def findHackRooms(buildings, computersNeeded, arrOfHackTimes, eventType)
+    arrayOfHackRooms = []
+    for el in 0 .. arrOfHackTimes.length-1
+        buildings.each do |building, rooms|
+            currentCapacity = 0
+            validRooms = []
+            roomsFound = false
+            rooms.each do |room, details|
+                next unless details["Computers Available"].downcase == "yes"
+                tsArr = details["timeSlotArray"]
+                next unless ((timeSlotIsValid(tsArr, arrOfHackTimes[el][0]) == true) and (timeSlotIsValid(tsArr, arrOfHackTimes[el][1]) == true))
+                currentCapacity += details["Capacity"]
+                # return selected_rooms if current_capacity >= computer_needed
+                validRooms.push(building, room, details, [arrOfHackTimes[el][0], arrOfHackTimes[el][1]], eventType)
+                if currentCapacity >= computersNeeded
+                    arrayOfHackRooms.push(validRooms)
+                    roomsFound = true
+                    break
+                end
+            end
+            break if roomsFound == true
+        end
+    end
+    if arrayOfHackRooms.length == arrOfHackTimes.length
+        return arrayOfHackRooms
+    end
+    return nil
 end
 
-# Time Complexity: Probably bad.
-# Space Complexity: Probably bad.
-# TBD
-def schedule(theBuildings, theUserPreferences)
-    amountEating = theUserPreferences.getAttendees * 0.6
-    amountWhoNeedsComputers = theUserPreferences.getAttendees * 0.1
-    timeNeededForOpeningandClosingSession = 4
-    theUserPreferences.addToDuration(timeNeededForOpeningandClosingSession)
-    additionalHoursNeededForMeal = theUserPreferences.getDuration/6
-    theUserPreferences.addToDuration(additionalHoursNeededForMeal)
+def schedule(userPreferences, buildings)
+    totalAttendees = userPreferences.getAttendees
+    mealAttendees = (totalAttendees * 0.6).ceil
+    computersNeeded = (totalAttendees * 0.1).ceil
 
     eventType = [
         "Opening Session",
-        "Group Work",
-        "Meal",
-        "Closing Session"
+        "Hacking",
+        "Eating",
+        "Closing Session",
     ]
 
-    theBuildings.each do |key, value|
-
+    timeScheduleForEvent = breakUpEvent(userPreferences.getDuration2, userPreferences.getStartTime)
+    if timeScheduleForEvent == nil
+        print "Cannot generate schedule!\n"
+        exit
     end
+
+    openingSeshTimeArr = timeScheduleForEvent[:openingSessionTime]
+    closingSeshTimeArr = timeScheduleForEvent[:closingSessionTime]
+    hackTimesArr = timeScheduleForEvent[:hackTimes]
+
+    openingRoomDetailArr = findRoomForAll(buildings, totalAttendees, openingSeshTimeArr, eventType[0])
+    if openingRoomDetailArr == nil
+        print "Cannot generate schedule! No room matches opening room constraints!\n"
+        exit
+    end
+    # print openingRoomDetailArr[0]
+    # print "\n"
+    # print openingRoomDetailArr[1]
+    # print "\n"
+    # print openingRoomDetailArr[2]
+    # print "\n"
+
+    closingRoomDetailArr = findRoomForAll(buildings, totalAttendees, closingSeshTimeArr, eventType[3])
+    if closingRoomDetailArr == nil
+        print "Cannot generate schedule! No room matches closing room constraints!\n"
+        exit
+    end
+
+    if timeScheduleForEvent.has_key?(:mealTimes) == true
+        arrOfMealTimes = timeScheduleForEvent[:mealTimes]
+        mealRoomsDetails = findMealRooms(buildings, mealAttendees, arrOfMealTimes, eventType[2])
+        if mealRoomsDetails == nil
+            print "Cannot generate schedule! No room matches meal room constraints!\n"
+            exit
+        end
+    end
+
+    hackRoomsDetailArr = findHackRooms(buildings, computersNeeded, hackTimesArr, eventType[1])
+    if hackRoomsDetailArr == nil
+        print "Cannot generate schedule! No room matches hack room constraints!\n"
+        exit
+    end
+
+    if timeScheduleForEvent.has_key?(:mealTimes) == true
+        return {
+            opening: openingRoomDetailArr,
+            closing: closingRoomDetailArr,
+            meals: mealRoomsDetails,
+            hacks: hackRoomsDetailArr
+        }
+    end
+
+    return {
+        opening: openingRoomDetailArr,
+        closing: closingRoomDetailArr,
+        hacks: hackRoomsDetailArr
+    }
+
+end
+
+def formatForOutputCSV(hashMap, attributes)
+    opening = hashMap[:opening]
+    closing = hashMap[:closing]
+    openingRow = []
+    closingRow = []
+    hackingRows = []
+    #hashMap[:meals]
+    hacks = hashMap[:hacks]
+    for attr in 0 .. attributes.length-1
+        if attributes[attr] == "Date"
+            openingRow.push(opening[3][0].year.to_s + "-" + opening[3][0].month.to_s + "-" + opening[3][0].day.to_s)
+        elsif attributes[attr] == "Time"
+            openingRow.push(opening[3][0])
+        elsif attributes[attr] == "Building"
+            openingRow.push(opening[0])
+        elsif attributes[attr] == "Room"
+            openingRow.push(opening[1])
+        elsif attributes[attr] == "Purpose"
+            openingRow.push(opening[4])
+        else
+            openingRow.push(opening[2][attributes[attr]])
+        end
+    end
+
+    for attr in 0 .. attributes.length-1
+        if attributes[attr] == "Date"
+            closingRow.push(closing[3][0].year.to_s + "-" + closing[3][0].month.to_s + "-" + closing[3][0].day.to_s)
+        elsif attributes[attr] == "Time"
+            closingRow.push(closing[3][0])
+        elsif attributes[attr] == "Building"
+            closingRow.push(closing[0])
+        elsif attributes[attr] == "Room"
+            closingRow.push(closing[1])
+        elsif attributes[attr] == "Purpose"
+            closingRow.push(closing[4])
+        else
+            closingRow.push(closing[2][attributes[attr]])
+        end
+    end
+
+    for hackSesh in 0 .. hacks.length-1
+            hackRow = []
+            for attr in 0 .. attributes.length-1
+                if attributes[attr] == "Date"
+                    hackRow.push(hacks[hackSesh][3][0].year.to_s + "-" + hacks[hackSesh][3][0].month.to_s + "-" + hacks[hackSesh][3][0].day.to_s)
+                elsif attributes[attr] == "Time"
+                    hackRow.push(hacks[hackSesh][3][0])
+                elsif attributes[attr] == "Building"
+                    hackRow.push(hacks[hackSesh][0])
+                elsif attributes[attr] == "Room"
+                    hackRow.push(hacks[hackSesh][1])
+                elsif attributes[attr] == "Purpose"
+                    hackRow.push(hacks[hackSesh][4])
+                else
+                    hackRow.push(hacks[hackSesh][2][attributes[attr]])
+                end
+            end
+        hackingRows.push(hackRow)
+    end
+
+    if hashMap.has_key?(:meals) == true
+        meals = hashMap[:meals]
+        mealsArr=[]
+        for mealsSesh in 0 .. meals.length-1
+                mealRow = []
+                for attr in 0 .. attributes.length-1
+                    if attributes[attr] == "Date"
+                        mealRow.push(meals[mealsSesh][3][0].year.to_s + "-" + meals[mealsSesh][3][0].month.to_s + "-" + meals[mealsSesh][3][0].day.to_s)
+                    elsif attributes[attr] == "Time"
+                        mealRow.push(meals[mealsSesh][3][0])
+                    elsif attributes[attr] == "Building"
+                        mealRow.push(meals[mealsSesh][0])
+                    elsif attributes[attr] == "Room"
+                        mealRow.push(meals[mealsSesh][1])
+                    elsif attributes[attr] == "Purpose"
+                        mealRow.push(meals[mealsSesh][4])
+                    else
+                        mealRow.push(meals[mealsSesh][2][attributes[attr]])
+                    end
+                end
+            mealsArr.push(mealRow)
+        end
+        print mealsArr
+        print "\n\n"
+        return [openingRow, closingRow, hackingRows, mealsArr]
+    end
+    return [openingRow, closingRow, hackingRows]
 end
