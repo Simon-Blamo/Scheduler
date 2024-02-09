@@ -1,8 +1,8 @@
 require "./Scheduler.rb"
 require "colorize"
 
-# Time Complexity: O(n * m)
-# Space Complexity: ???
+# Time Complexity: O(n * m * l)
+# Space Complexity: O(?)
 # Does the work.
 def main()
     tempArr = getRoomsCSV()

@@ -97,29 +97,47 @@ def durationTimeGivenIsValid(startTime, durationInput)
     return [duration, [hours, minutes]]
 end
 
+# Time Complexity: O(1)
+# Time Complexity: O(1)
+# Checks to see if capacity value in given CSV is valid.
 def validCapacityValue(val)
     return (val.to_i > 0)
 end
 
+# Time Complexity: O(1)
+# Time Complexity: O(1)
+# Checks to see if food allowed value in given CSV is valid.
 def validFoodAllowedValue(val)
     arr = ["yes", "no"]
     return arr.include?(val.downcase)
 end
 
+# Time Complexity: O(1)
+# Time Complexity: O(1)
+# Checks to see if computers available value in given CSV is valid.
 def validComputersAvailableValue(val)
     arr = ["yes", "no"]
     return arr.include?(val.downcase)
 end
 
+# Time Complexity: O(1)
+# Time Complexity: O(1)
+# Checks to see if seating type value in given CSV is valid.
 def validSeatingTypeValue(val)
     arr = ["tiered", "level"]
     return arr.include?(val.downcase)
 end
 
+# Time Complexity: O(1)
+# Time Complexity: O(1)
+# Checks to see if Room value in given CSV is valid.
 def validRoomValue(val)
     return val.to_i > 0
 end
 
+# Time Complexity: O(n)
+# Time Complexity: O(1)
+# Checks to see if string given contains any unacceptable characters.
 def areAcceptableChars(s)
     unacceptableChars = []
     for ascii in 0 .. 128
@@ -150,7 +168,9 @@ def valueGivenIsValidNumeric(input)
     return input.to_i
 end
 
-# need to explain and refine
+# Time Complexity: O(n)
+# Time Complexity: O(1)
+# Checks to see if potential time given for event can be scheduled in room.
 def timeSlotIsValid(timeSlotArray, potentialTime)
     if timeSlotArray.length > 0
         for el in 0 .. timeSlotArray.length - 1
@@ -162,7 +182,9 @@ def timeSlotIsValid(timeSlotArray, potentialTime)
     return true
 end
 
-# need to explain and refine
+# Time Complexity: O(1)
+# Time Complexity: O(1)
+# If invalid data is found in sample CSV, function allows the user to decide how to handle the conflict.
 def handleConflict1(conflictVal, attributeWhereConflictFound, rowWhereConflictFound, index)
     print "\nERROR\n"
     print "\nConflict found in row:\n\n"

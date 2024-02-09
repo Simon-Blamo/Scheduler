@@ -328,6 +328,9 @@ def getUserPreferences()
     return preferences
 end
 
+# Time Complexity: O(1)
+# Space Complexity: O(?)
+# Properly breaks up event based on the Date/Start Time/Duration given.
 def breakUpEvent(duration, startTime)
     if duration[0].to_i * 60  < 300
         return nil
@@ -356,12 +359,6 @@ def breakUpEvent(duration, startTime)
         hackTimesArr = []
         mealTimesArr = []
 
-        # puts
-        # puts
-        # puts mealEventsToAccountFor
-        # puts
-        # puts numberOfHackSessionsToAccountFor
-        # puts
         loopHackStartTime = openSeshEndTime
         finalEndTime = nil
         while (numberOfHackSessionsToAccountFor != 0) or (mealEventsToAccountFor != 0)
@@ -406,6 +403,9 @@ def breakUpEvent(duration, startTime)
     end
 end
 
+# Time Complexity: O(n * m) where n is the number of buildings and m is the number of rooms.
+# Space Complexity: O(?)
+# Find a room that can fit all attendees.
 def findRoomForAll(buildings, totalAttendees, sessionArray, eventType)
     buildings.each do |building, rooms|
         rooms.each do |room, details|
@@ -416,6 +416,9 @@ def findRoomForAll(buildings, totalAttendees, sessionArray, eventType)
     return nil
 end
 
+# Time Complexity: O(n * m * l) where n is the number of buildings, m is the number of rooms, and l is the length of the arrOfMealTimes array.
+# Space Complexity: O(?)
+# Finds a room that can fits the meal room constraints.
 def findMealRooms(buildings, mealAttendees, arrOfMealTimes, eventType)
     arrayOfMealRooms = []
     buildings.each do |building, rooms|
@@ -440,6 +443,9 @@ def findMealRooms(buildings, mealAttendees, arrOfMealTimes, eventType)
     return nil
 end
 
+# Time Complexity: O(n * m * l) where n is the number of buildings, m is the number of rooms, and l is the length of the arrOfHackTimes array.
+# Space Complexity: O(?)
+# Find a room where participants without computers can hack in.
 def findHackRooms(buildings, computersNeeded, arrOfHackTimes, eventType)
     arrayOfHackRooms = []
     for el in 0 .. arrOfHackTimes.length-1
@@ -468,6 +474,9 @@ def findHackRooms(buildings, computersNeeded, arrOfHackTimes, eventType)
     return nil
 end
 
+# Time Complexity: O(n * m * l) where n is the number of buildings, m is the number of rooms, and l is the length of the arrOfMealTimes/arrOfHackTimes array.
+# Space Complexity: O(?)
+# Plans the event based on the user preferences.
 def schedule(userPreferences, buildings)
     totalAttendees = userPreferences.getAttendees
     mealAttendees = (totalAttendees * 0.6).ceil
@@ -535,6 +544,9 @@ def schedule(userPreferences, buildings)
 
 end
 
+# Time Complexity: O(n * m * l) where n is the number of seesion in which attendees are hacking, m is the number of rooms assigned to the hacking attendees, and l is the length of output CSV attributes.
+# Space Complexity: O(?)
+# Format the schedule hashMap a bit to properly write to the CSV.
 def formatForOutputCSV(hashMap, attributes)
     opening = hashMap[:opening]
     closing = hashMap[:closing]
@@ -625,6 +637,9 @@ def formatForOutputCSV(hashMap, attributes)
     return [openingRow, closingRow, hackingRows]
 end
 
+# Time Complexity: O(n * m)
+# Space Complexity: O(?)
+# Sort the schedule sections by time from earliest to latest.
 def sortTimes(arr)
     loop do
         for el in 0 .. arr.length - 2
