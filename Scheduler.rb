@@ -271,7 +271,7 @@ end
 # Time Complexity: O(n)
 # Space Complexity: O(1)
 # Function to get user's desired preferences for their upcoming event.
-    def getUserPreferences()
+def getUserPreferences()
     print "Enter the desired date of your event (yyyy-mm-dd Format): "
     while true
         date = gets.chomp()
@@ -356,10 +356,19 @@ def breakUpEvent(duration, startTime)
         hackTimesArr = []
         mealTimesArr = []
 
+        # puts
+        # puts
+        # puts mealEventsToAccountFor
+        # puts
+        # puts numberOfHackSessionsToAccountFor
+        # puts
         loopHackStartTime = openSeshEndTime
         finalEndTime = nil
-        while (numberOfHackSessionsToAccountFor != 0) and (mealEventsToAccountFor != 0)
+        while (numberOfHackSessionsToAccountFor != 0) or (mealEventsToAccountFor != 0)
             if  numberOfHackSessionsToAccountFor != 0
+                if timeAllocatedForOtherActivities < hackSessionDurations
+                    hackSessionDurations = timeAllocatedForOtherActivities
+                end
                 tempArr = []
                 tempArr.push(loopHackStartTime)
                 loopHackEndTime =  loopHackStartTime += (hackSessionDurations * (60 * 60))
@@ -368,6 +377,7 @@ def breakUpEvent(duration, startTime)
                 hackTimesArr.push(tempArr)
                 tempArr = nil
                 finalEndTime = loopHackEndTime
+                timeAllocatedForOtherActivities -= hackSessionDurations
             end
             if mealEventsToAccountFor != 0
                 tempArr = []
@@ -380,6 +390,7 @@ def breakUpEvent(duration, startTime)
                 tempArr = nil
                 loopHackStartTime = loopMealEndTime
                 finalEndTime = loopMealEndTime
+                timeAllocatedForOtherActivities -= 1
             end
         end
 
@@ -415,13 +426,13 @@ def findMealRooms(buildings, mealAttendees, arrOfMealTimes, eventType)
                 tsArr = details["timeSlotArray"]
                 arrayOfMealRooms.push([building, room, details, [arrOfMealTimes[times][0], arrOfMealTimes[times][1]], eventType]) if details["Capacity"] >= mealAttendees and ((timeSlotIsValid(tsArr, arrOfMealTimes[times][0]) == true) and (timeSlotIsValid(tsArr, arrOfMealTimes[times][1]) == true))
                 if arrayOfMealRooms.length > length
+                    arrOfMealTimes.shift
                     break
                 end
             end
             if arrayOfMealRooms == length
                 return nil
             else
-                arrOfMealTimes.shift
                 return arrayOfMealRooms if arrOfMealTimes.length == 0
             end
         end
@@ -441,7 +452,7 @@ def findHackRooms(buildings, computersNeeded, arrOfHackTimes, eventType)
                 tsArr = details["timeSlotArray"]
                 next unless ((timeSlotIsValid(tsArr, arrOfHackTimes[el][0]) == true) and (timeSlotIsValid(tsArr, arrOfHackTimes[el][1]) == true))
                 currentCapacity += details["Capacity"]
-                validRooms.push(building, room, details, [arrOfHackTimes[el][0], arrOfHackTimes[el][1]], eventType)
+                validRooms.push([building, room, details, [arrOfHackTimes[el][0], arrOfHackTimes[el][1]], eventType])
                 if currentCapacity >= computersNeeded
                     arrayOfHackRooms.push(validRooms)
                     roomsFound = true
@@ -464,8 +475,8 @@ def schedule(userPreferences, buildings)
 
     eventType = [
         "Opening Session",
-        "Hacking",
-        "Eating",
+        "Group Work",
+        "Meal",
         "Closing Session",
     ]
 
@@ -564,23 +575,27 @@ def formatForOutputCSV(hashMap, attributes)
     end
 
     for hackSesh in 0 .. hacks.length-1
+        theRoomsForThisSesh = []
+        for roomsForHackSesh in  0 .. hacks[hackSesh].length - 1
             hackRow = []
             for attr in 0 .. attributes.length-1
                 if attributes[attr] == "Date"
-                    hackRow.push(hacks[hackSesh][3][0].year.to_s + "-" + hacks[hackSesh][3][0].month.to_s + "-" + hacks[hackSesh][3][0].day.to_s)
+                    hackRow.push(hacks[hackSesh][roomsForHackSesh][3][0].year.to_s + "-" + hacks[hackSesh][roomsForHackSesh][3][0].month.to_s + "-" + hacks[hackSesh][roomsForHackSesh][3][0].day.to_s)
                 elsif attributes[attr] == "Time"
-                    hackRow.push(hacks[hackSesh][3][0])
+                    hackRow.push(hacks[hackSesh][roomsForHackSesh][3][0])
                 elsif attributes[attr] == "Building"
-                    hackRow.push(hacks[hackSesh][0])
+                    hackRow.push(hacks[hackSesh][roomsForHackSesh][0])
                 elsif attributes[attr] == "Room"
-                    hackRow.push(hacks[hackSesh][1])
+                    hackRow.push(hacks[hackSesh][roomsForHackSesh][1])
                 elsif attributes[attr] == "Purpose"
-                    hackRow.push(hacks[hackSesh][4])
+                    hackRow.push(hacks[hackSesh][roomsForHackSesh][4])
                 else
-                    hackRow.push(hacks[hackSesh][2][attributes[attr]])
+                    hackRow.push(hacks[hackSesh][roomsForHackSesh][2][attributes[attr]])
                 end
             end
-        hackingRows.push(hackRow)
+            theRoomsForThisSesh.push(hackRow)
+        end
+        hackingRows.push(theRoomsForThisSesh)
     end
 
     if hashMap.has_key?(:meals) == true
@@ -608,4 +623,17 @@ def formatForOutputCSV(hashMap, attributes)
         return [openingRow, closingRow, hackingRows, mealsArr]
     end
     return [openingRow, closingRow, hackingRows]
+end
+
+def sortTimes(arr)
+    loop do
+        for el in 0 .. arr.length - 2
+            if arr[el][1] > arr[el+1][1]
+                arr[el], arr[el+1] = arr[el+1], arr[el]
+                swapped = true
+            end
+        end
+        break if not swapped
+    end
+    return arr
 end

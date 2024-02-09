@@ -58,7 +58,7 @@ def startTimeGivenIsValid(date, timeInput)
     hours = givenTime[0].split(":")[0]
     minutes = givenTime[0].split(":")[1]
 
-    if !(hours.to_i > 0 and hours.to_i < 12)
+    if !(hours.to_i > 0 and hours.to_i <= 12)
         return -1
     end
 
@@ -66,7 +66,8 @@ def startTimeGivenIsValid(date, timeInput)
         return -1
     end
     begin
-        time = Time.new(date.year, date.mon, date.mday, hours, minutes, 0)
+        # time = Time.new(date.year, date.mon, date.mday, hours, minutes, 0)
+        time = convertStringArrToTime(date.year, date.mon, date.mday,  givenTime)
     rescue
         return -1
     end
@@ -175,7 +176,7 @@ def handleConflict1(conflictVal, attributeWhereConflictFound, rowWhereConflictFo
                 print "Conflict resolved! Row has been dropped. CSV processing shall continue.\n\n"
                 return 0
             elsif valueGivenIsValidNumeric(response) == -1
-                print "Invalid response. Please enter something valid."
+                print "\nInvalid response. Please enter something valid."
                 print "If correct value known, enter below. \nIf the correct value is not known, enter \"X\". The row will be dropped. \nEnter value: "
             else
                 print "Conflict resolved! Value for \"Capacity\" has been updated! CSV processing shall continue.\n\n"
@@ -187,10 +188,34 @@ def handleConflict1(conflictVal, attributeWhereConflictFound, rowWhereConflictFo
                 print "Conflict resolved! Row has been dropped. CSV processing shall continue.\n\n"
                 return 0
             elsif validComputersAvailableValue(response) == false
-                print "Invalid response. Please enter something valid."
+                print "\nInvalid response. Please enter something valid."
                 print "If correct value known, enter below. \nIf the correct value is not known, enter \"X\". The row will be dropped. \nEnter value: "
             else
                 print "Conflict resolved! Value for \"Computers Available\" has been updated! CSV processing shall continue.\n\n"
+                break
+            end
+        elsif attributeWhereConflictFound.downcase == "food allowed"
+            response = gets.chomp()
+            if response.downcase == "x"
+                print "Conflict resolved! Row has been dropped. CSV processing shall continue.\n\n"
+                return 0
+            elsif validFoodAllowedValue(response) == false
+                print "\nInvalid response. Please enter something valid."
+                print "If correct value known, enter below. \nIf the correct value is not known, enter \"X\". The row will be dropped. \nEnter value: "
+            else
+                print "Conflict resolved! Value for \"Food Allowed\" has been updated! CSV processing shall continue.\n\n"
+                break
+            end
+        elsif attributeWhereConflictFound.downcase == "seating type"
+            response = gets.chomp()
+            if response.downcase == "x"
+                print "Conflict resolved! Row has been dropped. CSV processing shall continue.\n\n"
+                return 0
+            elsif validSeatingTypeValue(response) == false
+                print "\nInvalid response. Please enter something valid."
+                print "If correct value known, enter below. \nIf the correct value is not known, enter \"X\". The row will be dropped. \nEnter value: "
+            else
+                print "Conflict resolved! Value for \"Seating Type\" has been updated! CSV processing shall continue.\n\n"
                 break
             end
         else
@@ -198,11 +223,11 @@ def handleConflict1(conflictVal, attributeWhereConflictFound, rowWhereConflictFo
             if response.downcase == "x"
                 print "Conflict resolved! Row has been dropped. CSV processing shall continue.\n\n"
                 return 0
-            elsif validFoodAllowedValue(response) == false
-                print "Invalid response. Please enter something valid."
+            elsif validRoomValue(response) == false
+                print "\nInvalid response. Please enter something valid."
                 print "If correct value known, enter below. \nIf the correct value is not known, enter \"X\". The row will be dropped. \nEnter value: "
             else
-                print "Conflict resolved! Value for \"Food Allowed\" has been updated! CSV processing shall continue.\n\n"
+                print "Conflict resolved! Value for \"Room\" has been updated! CSV processing shall continue.\n\n"
                 break
             end
         end
