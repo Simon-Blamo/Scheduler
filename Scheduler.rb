@@ -8,10 +8,7 @@ require './UserPreferences.rb'
 # Space Complexity: O(1)
 # Checks if timeInput given by user is in the PM or not.
 def inPM(s)
-    if s.downcase == "pm"
-        return true
-    end
-    return false
+    return s.downcase == "pm"
 end
 
 # Time Complexity: O(1)
@@ -21,7 +18,7 @@ def convertStringArrToDate(arr)
     year = arr[0].to_i
     month = arr[1].to_i
     day = arr[2].to_i
-    if ((year < 1) or (year > 2024)) or ((day < 1) or (day > 31)) or ((month < 1) or (month > 12))
+    if ((year != 2024) or ((day < 1) or (day > 31)) or ((month < 1) or (month > 12)))
         return -1
     end
     return Date.new(year, month, day)
@@ -53,11 +50,6 @@ def convertStringArrToTimeDuration(startTime, arr)
     time += (arr[0].to_i * 60 * 60)
     time += (arr[1].to_i * 60)
     return time
-end
-
-# need to implement
-def handleConflict2
-
 end
 
 # Time Complexity: O(n)
@@ -188,10 +180,10 @@ def saveRoomDetails(fileName, attributes)
         if buildingsHash.has_key?(building) == false
             if value == nil
                 buildingsHash.delete(room)
-            else 
+            else
                 buildingsHash[building] = {room => roomDetails}
             end
-            
+
         else
             if value == nil
                 buildingsHash.delete(room)
@@ -214,7 +206,7 @@ def saveRoomBooking(fileName, buildingsHash, attributes)
         room = file[row][1]
         begin
             roomDetails = buildingsHash[building][room]
-        rescue 
+        rescue
             next
 
         end
@@ -237,7 +229,7 @@ def saveRoomBooking(fileName, buildingsHash, attributes)
 
                 begin
                     roomDetails[attributes[attr]] = date
-                rescue 
+                rescue
                     roomDetails = -1
                     break
                 end
@@ -279,7 +271,7 @@ end
 # Time Complexity: O(n)
 # Space Complexity: O(1)
 # Function to get user's desired preferences for their upcoming event.
-def getUserPreferences()
+    def getUserPreferences()
     print "Enter the desired date of your event (yyyy-mm-dd Format): "
     while true
         date = gets.chomp()
