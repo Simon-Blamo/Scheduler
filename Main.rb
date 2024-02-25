@@ -40,7 +40,7 @@ def main()
         end
     end
     arr = sortTimes(arr)
-    print "Here is your generated schedule:\n\n"
+    print "\nHere is your generated schedule:\n"
     for el in 0 .. arr.length-1
         if arr[el][arr[el].length-1] == "Opening Session"
             for e in 0 .. arr[el].length-1
@@ -89,21 +89,28 @@ def main()
         response = gets.chomp()
         if response.downcase == "y"
             print "\n"
-            print "What would you like to name the file?: "
-            name = gets.chomp()
-            CSV.open(name, "w") do |csv|
-                csv << outputAttributes
-                for element in 0 .. arr.length-1
-                    csv << arr[element]
+            print "What would you like to name the file? (End file name with \".csv\"): "
+            while 
+                name = gets.chomp()
+                if name.end_with?(".csv") == true
+                    CSV.open(name, "w") do |csv|
+                        csv << outputAttributes
+                        for element in 0 .. arr.length-1
+                            csv << arr[element]
+                        end
+                    end
+                    currDir = Dir.getwd
+                    print "\n\"" + name + "\" has been saved to " + currDir + "\n"
+                    exit
+                else
+                    print "\nFile name entered did not end with \".csv\"\nPlease try again.\n\n"
+                    print "What would you like to name the file? (End file name with \".csv\"): "
                 end
             end
-            currDir = Dir.getwd
-            print "\n\"" + name + "\" has been saved to " + currDir + "\n"
-            exit
         elsif response.downcase == "n"
             exit
         else
-            "Response not understood.\nIf you would like to save the schedule as a CSV, enter 'Y' for Yes or 'N' for No: "
+            "\nResponse not understood.\nIf you would like to save the schedule as a CSV, enter 'Y' for Yes or 'N' for No: "
         end
     end
 

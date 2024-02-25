@@ -17,86 +17,6 @@ def fileNameGivenIsValid(fileName)
     return 1
 end
 
-# Time Complexity: O(n)
-# Space Complexity: O(1)
-# Checks to see if date input by user is valid.
-def dateGivenIsValid(dateInput)
-    givenDate = dateInput.split("-")
-    if givenDate.length != 3
-        return -1
-    end
-
-    begin
-        day = convertStringArrToDate(givenDate)
-    rescue
-        return -1
-    end
-    currentDay = DateTime.now
-    if (currentDay > day)
-        return -1
-    end
-    return day
-end
-
-# Time Complexity: O(n)
-# Space Complexity: O(1)
-# Checks to see if start time input by user is valid.
-def startTimeGivenIsValid(date, timeInput)
-    validHourPeriods = ["am", "pm"]
-    givenTime = timeInput.split(" ")
-    if givenTime.length != 2
-        return -1
-    end
-
-    if validHourPeriods.include?(givenTime[1].downcase) == false
-        return -1
-    end
-
-    if givenTime[0].split(":").length != 2
-        return -1
-    end
-    hours = givenTime[0].split(":")[0]
-    minutes = givenTime[0].split(":")[1]
-
-    if !(hours.to_i > 0 and hours.to_i <= 12)
-        return -1
-    end
-
-    if !(minutes.to_i >= 0 and minutes.to_i < 60)
-        return -1
-    end
-    begin
-        # time = Time.new(date.year, date.mon, date.mday, hours, minutes, 0)
-        time = convertStringArrToTime(date.year, date.mon, date.mday,  givenTime)
-    rescue
-        return -1
-    end
-    return time
-end
-
-# Time Complexity: O(n)
-# Time Complexity: O(1)
-# Checks to see if duration input by user is valid.
-def durationTimeGivenIsValid(startTime, durationInput)
-    givenTime = durationInput.split(":")
-    if givenTime.length != 2
-        return -1
-    end
-    hours = givenTime[0]
-    minutes = givenTime[1]
-
-    if !(hours.to_i > 0 and hours.to_i <= 27)
-        return -1
-    end
-
-    if !(minutes.to_i >= 0 and minutes.to_i < 60)
-        return -1
-    end
-
-    duration = convertStringArrToTimeDuration(startTime, [hours, minutes])
-    return [duration, [hours, minutes]]
-end
-
 # Time Complexity: O(1)
 # Time Complexity: O(1)
 # Checks to see if capacity value in given CSV is valid.
@@ -138,7 +58,61 @@ end
 # Time Complexity: O(n)
 # Time Complexity: O(1)
 # Checks to see if string given contains any unacceptable characters.
-def areAcceptableChars(s)
+def areAcceptableChars1(s)
+    unacceptableChars = []
+    for ascii in 0 .. 128
+        if !(ascii >= 48 and ascii <= 57) and (ascii != 45)
+            unacceptableChars.push(ascii.chr)
+        end
+    end
+    s.each_char{|c|
+        if unacceptableChars.include?(c)
+            return false
+        end
+    }
+    return true
+end
+
+# Time Complexity: O(n)
+# Time Complexity: O(1)
+# 
+def areAcceptableChars2(s)
+    unacceptableChars = []
+    for ascii in 0 .. 128
+        if !(ascii >= 48 and ascii <= 58) and (ascii != "m".ord and ascii != "M".ord) and ( ascii != "a".ord and ascii != "A".ord) and (ascii != "p".ord and ascii != "P".ord) and (ascii != 32)
+            unacceptableChars.push(ascii.chr)
+        end
+    end
+    s.each_char{|c|
+        if unacceptableChars.include?(c)
+            return false
+        end
+    }
+    return true
+end
+
+# Time Complexity: O(n)
+# Time Complexity: O(1)
+# 
+def areAcceptableChars3(s)
+    unacceptableChars = []
+    for ascii in 0 .. 128
+        if !(ascii >= 48 and ascii <= 58)
+            unacceptableChars.push(ascii.chr)
+        end
+    end
+    s.each_char{|c|
+        if unacceptableChars.include?(c)
+            return false
+        end
+    }
+    return true
+end
+
+# Time Complexity: O(n)
+# Time Complexity: O(1)
+# 
+def areAcceptableChars4(s)
     unacceptableChars = []
     for ascii in 0 .. 128
         if !(ascii >= 48 and ascii <= 57)
@@ -154,10 +128,99 @@ def areAcceptableChars(s)
 end
 
 # Time Complexity: O(n)
+# Space Complexity: O(1)
+# Checks to see if date input by user is valid.
+def dateGivenIsValid(dateInput)
+    if areAcceptableChars1(dateInput) == false
+        return -1
+    end
+    givenDate = dateInput.split("-")
+    if givenDate.length != 3
+        return -1
+    end
+
+    begin
+        day = convertStringArrToDate(givenDate)
+    rescue
+        return -1
+    end
+    currentDay = DateTime.now
+    if (currentDay > day)
+        return -1
+    end
+    return day
+end
+
+# Time Complexity: O(n)
+# Space Complexity: O(1)
+# Checks to see if start time input by user is valid.
+def startTimeGivenIsValid(date, timeInput)
+    if areAcceptableChars2(timeInput) == false
+        return -1
+    end
+    validHourPeriods = ["am", "pm"]
+    givenTime = timeInput.split(" ")
+    if givenTime.length != 2
+        return -1
+    end
+
+    if validHourPeriods.include?(givenTime[1].downcase) == false
+        return -1
+    end
+
+    if givenTime[0].split(":").length != 2
+        return -1
+    end
+    hours = givenTime[0].split(":")[0]
+    minutes = givenTime[0].split(":")[1]
+
+    if !(hours.to_i > 0 and hours.to_i <= 12)
+        return -1
+    end
+
+    if !(minutes.to_i >= 0 and minutes.to_i < 60)
+        return -1
+    end
+    begin
+        # time = Time.new(date.year, date.mon, date.mday, hours, minutes, 0)
+        time = convertStringArrToTime(date.year, date.mon, date.mday,  givenTime)
+    rescue
+        return -1
+    end
+    return time
+end
+
+# Time Complexity: O(n)
+# Time Complexity: O(1)
+# Checks to see if duration input by user is valid.
+def durationTimeGivenIsValid(startTime, durationInput)
+    if areAcceptableChars3(durationInput) == false
+        return -1
+    end
+    givenTime = durationInput.split(":")
+    if givenTime.length != 2
+        return -1
+    end
+    hours = givenTime[0]
+    minutes = givenTime[1]
+
+    if !(hours.to_i > 0 and hours.to_i <= 27)
+        return -1
+    end
+
+    if !(minutes.to_i >= 0 and minutes.to_i < 60)
+        return -1
+    end
+
+    duration = convertStringArrToTimeDuration(startTime, [hours, minutes])
+    return [duration, [hours, minutes]]
+end
+
+# Time Complexity: O(n)
 # # Space Complexity: O(1)
 # Checks to see if attendees input by user is valid.
 def valueGivenIsValidNumeric(input)
-    result = areAcceptableChars(input)
+    result = areAcceptableChars4(input)
     if result == false
         return -1
     end

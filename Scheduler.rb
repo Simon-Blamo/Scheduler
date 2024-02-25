@@ -353,12 +353,11 @@ def breakUpEvent(duration, startTime)
     else
         timeAllocatedForOtherActivities = (duration[0].to_i) - 4
         mealEventsToAccountFor = mealEventsNeeded.floor()
-        numberOfHackSessionsToAccountFor = timeAllocatedForOtherActivities / mealEventsToAccountFor
-        hackSessionDurations = numberOfHackSessionsToAccountFor - 1
-
+        timeAllocatedForOtherActivities -= mealEventsToAccountFor
+        hackSessionDurations = (timeAllocatedForOtherActivities.to_f / mealEventsToAccountFor).ceil()
+        numberOfHackSessionsToAccountFor = (timeAllocatedForOtherActivities.to_f / hackSessionDurations).ceil()
         hackTimesArr = []
         mealTimesArr = []
-
         loopHackStartTime = openSeshEndTime
         finalEndTime = nil
         while (numberOfHackSessionsToAccountFor != 0) or (mealEventsToAccountFor != 0)
@@ -387,7 +386,6 @@ def breakUpEvent(duration, startTime)
                 tempArr = nil
                 loopHackStartTime = loopMealEndTime
                 finalEndTime = loopMealEndTime
-                timeAllocatedForOtherActivities -= 1
             end
         end
 
@@ -446,9 +444,35 @@ end
 # Time Complexity: O(n * m * l) where n is the number of buildings, m is the number of rooms, and l is the length of the arrOfHackTimes array.
 # Space Complexity: O(?)
 # Find a room where participants without computers can hack in.
-def findHackRooms(buildings, computersNeeded, arrOfHackTimes, eventType)
-    arrayOfHackRooms = []
-    for el in 0 .. arrOfHackTimes.length-1
+def findHackRooms(buildings, computersNeeded, arrOfHackTimes, eventType, areThereMeals)
+    if areThereMeals == true
+        arrayOfHackRooms = []
+        for el in 0 .. arrOfHackTimes.length-1
+            buildings.each do |building, rooms|
+                currentCapacity = 0
+                validRooms = []
+                roomsFound = false
+                rooms.each do |room, details|
+                    next unless details["Computers Available"].downcase == "yes"
+                    tsArr = details["timeSlotArray"]
+                    next unless ((timeSlotIsValid(tsArr, arrOfHackTimes[el][0]) == true) and (timeSlotIsValid(tsArr, arrOfHackTimes[el][1]) == true))
+                    currentCapacity += details["Capacity"]
+                    validRooms.push([building, room, details, [arrOfHackTimes[el][0], arrOfHackTimes[el][1]], eventType])
+                    if currentCapacity >= computersNeeded
+                        arrayOfHackRooms.push(validRooms)
+                        roomsFound = true
+                        break
+                    end
+                end
+                break if roomsFound == true
+            end
+        end
+        if arrayOfHackRooms.length == arrOfHackTimes.length
+            return arrayOfHackRooms
+        end
+        return nil
+    else
+        arrayOfHackRooms = []
         buildings.each do |building, rooms|
             currentCapacity = 0
             validRooms = []
@@ -456,9 +480,9 @@ def findHackRooms(buildings, computersNeeded, arrOfHackTimes, eventType)
             rooms.each do |room, details|
                 next unless details["Computers Available"].downcase == "yes"
                 tsArr = details["timeSlotArray"]
-                next unless ((timeSlotIsValid(tsArr, arrOfHackTimes[el][0]) == true) and (timeSlotIsValid(tsArr, arrOfHackTimes[el][1]) == true))
+                next unless ((timeSlotIsValid(tsArr, arrOfHackTimes[0]) == true) and (timeSlotIsValid(tsArr, arrOfHackTimes[1]) == true))
                 currentCapacity += details["Capacity"]
-                validRooms.push([building, room, details, [arrOfHackTimes[el][0], arrOfHackTimes[el][1]], eventType])
+                validRooms.push([building, room, details, [arrOfHackTimes[0], arrOfHackTimes[1]], eventType])
                 if currentCapacity >= computersNeeded
                     arrayOfHackRooms.push(validRooms)
                     roomsFound = true
@@ -467,11 +491,10 @@ def findHackRooms(buildings, computersNeeded, arrOfHackTimes, eventType)
             end
             break if roomsFound == true
         end
+        if arrayOfHackRooms.length == arrOfHackTimes.length
+            return arrayOfHackRooms
+        end
     end
-    if arrayOfHackRooms.length == arrOfHackTimes.length
-        return arrayOfHackRooms
-    end
-    return nil
 end
 
 # Time Complexity: O(n * m * l) where n is the number of buildings, m is the number of rooms, and l is the length of the arrOfMealTimes/arrOfHackTimes array.
@@ -513,21 +536,18 @@ def schedule(userPreferences, buildings)
     end
 
     if timeScheduleForEvent.has_key?(:mealTimes) == true
+        hackRoomsDetailArr = findHackRooms(buildings, computersNeeded, hackTimesArr, eventType[1], true)
+        if hackRoomsDetailArr == nil
+            print "Cannot generate schedule! No room matches hack room constraints!\n"
+            exit
+        end
+
         arrOfMealTimes = timeScheduleForEvent[:mealTimes]
         mealRoomsDetails = findMealRooms(buildings, mealAttendees, arrOfMealTimes, eventType[2])
         if mealRoomsDetails == nil
             print "Cannot generate schedule! No room matches meal room constraints!\n"
             exit
         end
-    end
-
-    hackRoomsDetailArr = findHackRooms(buildings, computersNeeded, hackTimesArr, eventType[1])
-    if hackRoomsDetailArr == nil
-        print "Cannot generate schedule! No room matches hack room constraints!\n"
-        exit
-    end
-
-    if timeScheduleForEvent.has_key?(:mealTimes) == true
         return {
             opening: openingRoomDetailArr,
             closing: closingRoomDetailArr,
@@ -535,6 +555,12 @@ def schedule(userPreferences, buildings)
             hacks: hackRoomsDetailArr
         }
     end
+
+    hackRoomsDetailArr = findHackRooms(buildings, computersNeeded, hackTimesArr, eventType[1], false)
+        if hackRoomsDetailArr == nil
+            print "Cannot generate schedule! No room matches hack room constraints!\n"
+            exit
+        end
 
     return {
         opening: openingRoomDetailArr,
