@@ -1,0 +1,149 @@
+Script started on 2024-03-02 02:24:44-05:00
+]0;student1@csc415-server22:~/vm-csc415/scheduler[student1@csc415-server22 scheduler]$ ruby Main.rb
+Enter the filename of the Rooms CSV (Enter EXIT to quit): rooms_list
+File "rooms_list" not found. Please make sure the file you're entering is located within the same directory.
+
+Enter the filename of the Rooms CSV (Enter EXIT to quit): rooms_list.csv
+Enter the filename of the Reserved Rooms CSV (Enter EXIT to quit): reserved_o rooms
+File "reserved_rooms" not found. Please make sure the file you're entering is located within the same directory.
+
+Enter the filename of the Reserved Rooms CSV (Enter EXIT to quit): ro eserved_rooms.csv
+
+ERROR
+
+Conflict found in row:
+
+["Science", "101", "-500", "No", "Round Tables", "Level", "Yes", "Biology", "Classroom"]
+
+ Value, "-500", is not valid for attribute "Capacity".
+
+If correct value known, enter below. 
+If the correct value is not known, enter "x". The row will be dropped. 
+
+If you wish skip and drop the any remaining conflicts that may appear, enter "X". 
+
+Enter value: 500
+Conflict resolved! Value for " Capacity" has been updated! CSV processing shall continue.
+
+
+ERROR
+
+Conflict found in row:
+
+["BSC", "486", "-388", "Yes", "Various Seating Options", "Tiered", "Yes", "Administration", "Classroom"]
+
+ Value, "-388", is not valid for attribute "Capacity".
+
+If correct value known, enter below. 
+If the correct value is not known, enter "x". The row will be dropped. 
+
+If you wish skip and drop the any remaining conflicts that may appear, enter "X". 
+
+Enter value: x
+Conflict resolved! Row has been dropped. CSV processing shall continue.
+
+
+ERROR
+
+Conflict found in row:
+
+["Physics", "106", "41", "No", "Various Seating Options", "Circled", "Yes", "Social Sciences", "Classroom"]
+
+ Value, "Circled", is not valid for attribute "Seating Type".
+
+If correct value known, enter below. 
+If the correct value is not known, enter "x". The row will be dropped. 
+
+If you wish skip and drop the any remaining conflicts that may appear, enter "X". 
+
+Enter value: x
+Conflict resolved! Row has been dropped. CSV processing shall continue.
+
+
+ERROR
+
+Conflict found in row:
+
+["Forcina", "210", "470", "Maybe", "Various Seating Options", "Level", "Yes", "Math", "Classroom"]
+
+ Value, "Maybe", is not valid for attribute "Computers Available".
+
+If correct value known, enter below. 
+If the correct value is not known, enter "x". The row will be dropped. 
+
+If you wish skip and drop the any remaining conflicts that may appear, enter "X". 
+
+Enter value: X
+Conflict resolved! Row has been dropped. CSV processing shall continue.
+
+Enter the desired date of your event (yyyy-mm-dd Format): 2 00001220
+Date, "00001220", not valid.
+
+Enter the desired date of your event (yyyy-mm-dd Format): 2023-06-017
+Date, "2023-06-017", not valid.
+
+Enter the desired date of your event (yyyy-mm-dd Format): 2024-06-17
+
+
+Enter the desired start time of your event (e.g., 1:00 PM): 27:00
+Start time, "27:00", not valid.
+
+Enter the desired start time of your event (e.g., 1:00 PM): 27:00 PM
+Start time, "27:00 PM", not valid.
+
+Enter the desired start time of your event (e.g., 1:00 PM): 12:00 PM
+
+
+Enter the duration of your event (e.g., 2:20): 0:500
+Duration time, "0:500", not valid.
+
+Enter the duration of your event (e.g., 2:20): 49:00
+Duration time, "49:00", not valid.
+
+Enter the duration of your event (e.g., 2:20): 12  27:00
+
+
+Enter the expected number of attendees (e.g., 25): -5
+Attendees number,"-5", not valid.
+
+Enter the expected number of attendees (e.g., 25): -10
+Attendees number,"-10", not valid.
+
+Enter the expected number of attendees (e.g., 25): 0
+Attendees number,"0", not valid.
+
+Enter the expected number of attendees (e.g., 25): 500
+["Capacity", "Computers Available", "Seating Available", "Seating Type", "Food Allowed", "Priority", "Room Type", "Purpose"]
+
+
+Here is your generated schedule:
+Date, Time, Building, Room, Capacity, Computers Available, Seating Available, Seating Type, Food Allowed, Priority, Room Type, Purpose
+[0;33;49m2024-06-17[0m[0;33;49m, [0m[0;33;49m2024-06-17 12:00:00 -0400[0m[0;33;49m, [0m[0;33;49mForcina[0m[0;33;49m, [0m[0;33;49m196[0m[0;33;49m, [0m[0;33;49m742[0m[0;33;49m, [0m[0;33;49mNo[0m[0;33;49m, [0m[0;33;49mVarious Seating Options[0m[0;33;49m, [0m[0;33;49mLevel[0m[0;33;49m, [0m[0;33;49mNo[0m[0;33;49m, [0m[0;33;49mAdministration[0m[0;33;49m, [0m[0;33;49mConference Room[0m[0;33;49m, [0m[0;33;49mOpening Session[0m
+[0;34;49m2024-06-17[0m[0;34;49m, [0m[0;34;49m2024-06-17 13:00:00 -0400[0m[0;34;49m, [0m[0;34;49mForcina[0m[0;34;49m, [0m[0;34;49m403[0m[0;34;49m, [0m[0;34;49m30[0m[0;34;49m, [0m[0;34;49mYes[0m[0;34;49m, [0m[0;34;49mLarge Tables with Chairs[0m[0;34;49m, [0m[0;34;49mLevel[0m[0;34;49m, [0m[0;34;49mNo[0m[0;34;49m, [0m[0;34;49mComputer Science[0m[0;34;49m, [0m[0;34;49mComputer Lab[0m[0;34;49m, [0m[0;34;49mGroup Work[0m
+[0;34;49m2024-06-17[0m[0;34;49m, [0m[0;34;49m2024-06-17 13:00:00 -0400[0m[0;34;49m, [0m[0;34;49mForcina[0m[0;34;49m, [0m[0;34;49m377[0m[0;34;49m, [0m[0;34;49m119[0m[0;34;49m, [0m[0;34;49mYes[0m[0;34;49m, [0m[0;34;49mVarious Seating Options[0m[0;34;49m, [0m[0;34;49mTiered[0m[0;34;49m, [0m[0;34;49mNo[0m[0;34;49m, [0m[0;34;49mBiology[0m[0;34;49m, [0m[0;34;49mConference Room[0m[0;34;49m, [0m[0;34;49mGroup Work[0m
+[0;31;49m2024-06-17[0m[0;31;49m, [0m[0;31;49m2024-06-17 18:00:00 -0400[0m[0;31;49m, [0m[0;31;49mForcina[0m[0;31;49m, [0m[0;31;49m146[0m[0;31;49m, [0m[0;31;49m410[0m[0;31;49m, [0m[0;31;49mYes[0m[0;31;49m, [0m[0;31;49mVarious Seating Options[0m[0;31;49m, [0m[0;31;49mLevel[0m[0;31;49m, [0m[0;31;49mYes[0m[0;31;49m, [0m[0;31;49mComputer Science[0m[0;31;49m, [0m[0;31;49mConference Room[0m[0;31;49m, [0m[0;31;49mMeal[0m
+[0;34;49m2024-06-17[0m[0;34;49m, [0m[0;34;49m2024-06-17 19:00:00 -0400[0m[0;34;49m, [0m[0;34;49mForcina[0m[0;34;49m, [0m[0;34;49m403[0m[0;34;49m, [0m[0;34;49m30[0m[0;34;49m, [0m[0;34;49mYes[0m[0;34;49m, [0m[0;34;49mLarge Tables with Chairs[0m[0;34;49m, [0m[0;34;49mLevel[0m[0;34;49m, [0m[0;34;49mNo[0m[0;34;49m, [0m[0;34;49mComputer Science[0m[0;34;49m, [0m[0;34;49mComputer Lab[0m[0;34;49m, [0m[0;34;49mGroup Work[0m
+[0;34;49m2024-06-17[0m[0;34;49m, [0m[0;34;49m2024-06-17 19:00:00 -0400[0m[0;34;49m, [0m[0;34;49mForcina[0m[0;34;49m, [0m[0;34;49m377[0m[0;34;49m, [0m[0;34;49m119[0m[0;34;49m, [0m[0;34;49mYes[0m[0;34;49m, [0m[0;34;49mVarious Seating Options[0m[0;34;49m, [0m[0;34;49mTiered[0m[0;34;49m, [0m[0;34;49mNo[0m[0;34;49m, [0m[0;34;49mBiology[0m[0;34;49m, [0m[0;34;49mConference Room[0m[0;34;49m, [0m[0;34;49mGroup Work[0m
+[0;31;49m2024-06-18[0m[0;31;49m, [0m[0;31;49m2024-06-18 00:00:00 -0400[0m[0;31;49m, [0m[0;31;49mForcina[0m[0;31;49m, [0m[0;31;49m284[0m[0;31;49m, [0m[0;31;49m599[0m[0;31;49m, [0m[0;31;49mNo[0m[0;31;49m, [0m[0;31;49mVarious Seating Options[0m[0;31;49m, [0m[0;31;49mLevel[0m[0;31;49m, [0m[0;31;49mYes[0m[0;31;49m, [0m[0;31;49mEngineering[0m[0;31;49m, [0m[0;31;49mComputer Lab[0m[0;31;49m, [0m[0;31;49mMeal[0m
+[0;34;49m2024-06-18[0m[0;34;49m, [0m[0;34;49m2024-06-18 01:00:00 -0400[0m[0;34;49m, [0m[0;34;49mForcina[0m[0;34;49m, [0m[0;34;49m403[0m[0;34;49m, [0m[0;34;49m30[0m[0;34;49m, [0m[0;34;49mYes[0m[0;34;49m, [0m[0;34;49mLarge Tables with Chairs[0m[0;34;49m, [0m[0;34;49mLevel[0m[0;34;49m, [0m[0;34;49mNo[0m[0;34;49m, [0m[0;34;49mComputer Science[0m[0;34;49m, [0m[0;34;49mComputer Lab[0m[0;34;49m, [0m[0;34;49mGroup Work[0m
+[0;34;49m2024-06-18[0m[0;34;49m, [0m[0;34;49m2024-06-18 01:00:00 -0400[0m[0;34;49m, [0m[0;34;49mForcina[0m[0;34;49m, [0m[0;34;49m377[0m[0;34;49m, [0m[0;34;49m119[0m[0;34;49m, [0m[0;34;49mYes[0m[0;34;49m, [0m[0;34;49mVarious Seating Options[0m[0;34;49m, [0m[0;34;49mTiered[0m[0;34;49m, [0m[0;34;49mNo[0m[0;34;49m, [0m[0;34;49mBiology[0m[0;34;49m, [0m[0;34;49mConference Room[0m[0;34;49m, [0m[0;34;49mGroup Work[0m
+[0;31;49m2024-06-18[0m[0;31;49m, [0m[0;31;49m2024-06-18 06:00:00 -0400[0m[0;31;49m, [0m[0;31;49mForcina[0m[0;31;49m, [0m[0;31;49m402[0m[0;31;49m, [0m[0;31;49m304[0m[0;31;49m, [0m[0;31;49mNo[0m[0;31;49m, [0m[0;31;49mVarious Seating Options[0m[0;31;49m, [0m[0;31;49mTiered[0m[0;31;49m, [0m[0;31;49mYes[0m[0;31;49m, [0m[0;31;49mAdministration[0m[0;31;49m, [0m[0;31;49mClassroom[0m[0;31;49m, [0m[0;31;49mMeal[0m
+[0;34;49m2024-06-18[0m[0;34;49m, [0m[0;34;49m2024-06-18 07:00:00 -0400[0m[0;34;49m, [0m[0;34;49mForcina[0m[0;34;49m, [0m[0;34;49m403[0m[0;34;49m, [0m[0;34;49m30[0m[0;34;49m, [0m[0;34;49mYes[0m[0;34;49m, [0m[0;34;49mLarge Tables with Chairs[0m[0;34;49m, [0m[0;34;49mLevel[0m[0;34;49m, [0m[0;34;49mNo[0m[0;34;49m, [0m[0;34;49mComputer Science[0m[0;34;49m, [0m[0;34;49mComputer Lab[0m[0;34;49m, [0m[0;34;49mGroup Work[0m
+[0;34;49m2024-06-18[0m[0;34;49m, [0m[0;34;49m2024-06-18 07:00:00 -0400[0m[0;34;49m, [0m[0;34;49mForcina[0m[0;34;49m, [0m[0;34;49m377[0m[0;34;49m, [0m[0;34;49m119[0m[0;34;49m, [0m[0;34;49mYes[0m[0;34;49m, [0m[0;34;49mVarious Seating Options[0m[0;34;49m, [0m[0;34;49mTiered[0m[0;34;49m, [0m[0;34;49mNo[0m[0;34;49m, [0m[0;34;49mBiology[0m[0;34;49m, [0m[0;34;49mConference Room[0m[0;34;49m, [0m[0;34;49mGroup Work[0m
+[0;31;49m2024-06-18[0m[0;31;49m, [0m[0;31;49m2024-06-18 11:00:00 -0400[0m[0;31;49m, [0m[0;31;49mForcina[0m[0;31;49m, [0m[0;31;49m243[0m[0;31;49m, [0m[0;31;49m439[0m[0;31;49m, [0m[0;31;49mYes[0m[0;31;49m, [0m[0;31;49mVarious Seating Options[0m[0;31;49m, [0m[0;31;49mTiered[0m[0;31;49m, [0m[0;31;49mYes[0m[0;31;49m, [0m[0;31;49mPhysics[0m[0;31;49m, [0m[0;31;49mClassroom[0m[0;31;49m, [0m[0;31;49mMeal[0m
+[0;32;49m2024-06-18[0m[0;32;49m, [0m[0;32;49m2024-06-18 12:00:00 -0400[0m[0;32;49m, [0m[0;32;49mForcina[0m[0;32;49m, [0m[0;32;49m196[0m[0;32;49m, [0m[0;32;49m742[0m[0;32;49m, [0m[0;32;49mNo[0m[0;32;49m, [0m[0;32;49mVarious Seating Options[0m[0;32;49m, [0m[0;32;49mLevel[0m[0;32;49m, [0m[0;32;49mNo[0m[0;32;49m, [0m[0;32;49mAdministration[0m[0;32;49m, [0m[0;32;49mConference Room[0m[0;32;49m, [0m[0;32;49mClosing Session[0m
+
+Would you like to save the schedule as a CSV? Enter 'Y' for Yes or 'N' for No: Y
+
+What would you like to name the file? (End file name with ".csv"): schedule
+
+File name entered did not end with ".csv"
+Please try again.
+
+What would you like to name the file? (End file name with ".csv"): schd edule_sam_bloa  amo.csv
+
+"schedule_sam_blamo.csv" has been saved to /home/student1/vm-csc415/scheduler
+]0;student1@csc415-server22:~/vm-csc415/scheduler[student1@csc415-server22 scheduler]$ exit
+exit
+
+Script done on 2024-03-02 02:27:19-05:00
