@@ -1,119 +1,27 @@
 require "./Scheduler.rb"
-require "colorize"
 
-# Time Complexity: O(n * m * l)
-# Space Complexity: O(?)
-# Does the work.
-def main()
-    tempArr = getRoomsCSV()
-    theFileNameRoom = tempArr[0]
-    roomAttributes = tempArr[1]
-    tempArr = getRoomsReservationCSV()
-    theFileNameReservation = tempArr[0]
-    reservationAttributes = tempArr[1]
+# Time Complexity O(n *m *l)
+# Controller function that handle class all the core functions of entire program.
+def make_schedule()
+  array_of_processing_essentials_1 = get_rooms_csv()
+  array_of_processing_essentials_2 = get_rooms_reservation_csv()
+  room_details_file_name = array_of_processing_essentials_1[0]
+  attributes_for_rooms = array_of_processing_essentials_1[1]
+  reservation_file_name = array_of_processing_essentials_2[0]
+  attributes_for_reservations = array_of_processing_essentials_2[1]
 
-    buildings = saveRoomDetails(theFileNameRoom, roomAttributes)
-    buildings = saveRoomBooking(theFileNameReservation, buildings, reservationAttributes)
-    userPreferences = getUserPreferences()
-    outputAttributes = roomAttributes
-    outputAttributes.unshift("Time")
-    outputAttributes.unshift("Date")
-    outputAttributes.push("Purpose")
-    outputCSV = schedule(userPreferences, buildings)
-    tempArr = formatForOutputCSV(outputCSV, outputAttributes)
-    arr = []
-    for element in 0 .. tempArr.length-1
-        if element == 2
-            for el in 0 .. tempArr[element].length-1
-                for e in 0 .. tempArr[element][el].length-1
-                    arr.push(tempArr[element][el][e])
+  tcnj = save_room_details(room_details_file_name, attributes_for_rooms)
+  tcnj = save_room_reservation_details(reservation_file_name, attributes_for_reservations, tcnj)
 
-                end
-            end
-        elsif element == 3
-            for el in 0 .. tempArr[element].length-1
-                arr.push(tempArr[element][el])
+  users_preference = get_user_preferences()
+  output_attributes = make_output_csv_attributes1(attributes_for_rooms)
 
-            end
-        else
-            arr.push(tempArr[element])
-        end
-    end
-    arr = sortTimes(arr)
-    print "\nHere is your generated schedule:\n"
-    for el in 0 .. arr.length-1
-        if arr[el][arr[el].length-1] == "Opening Session"
-            for e in 0 .. arr[el].length-1
-                if e == 0
-                    print arr[el][e].yellow
-                else
-                    print ", ".yellow
-                    print arr[el][e].to_s.yellow
-                end
-            end
-            print "\n"
-        elsif arr[el][arr[el].length-1]  == "Group Work"
-            for e in 0 .. arr[el].length-1
-                if e == 0
-                    print arr[el][e].blue
-                else
-                    print ", ".blue
-                    print arr[el][e].to_s.blue
-                end
-            end
-            print "\n"
-        elsif arr[el][arr[el].length-1]  == "Meal"
-            for e in 0 .. arr[el].length-1
-                if e == 0
-                    print arr[el][e].red
-                else
-                    print ", ".red
-                    print arr[el][e].to_s.red
-                end
-            end
-            print "\n"
-        else
-            for e in 0 .. arr[el].length-1
-                if e == 0
-                    print arr[el][e].green
-                else
-                    print ", ".green
-                    print arr[el][e].to_s.green
-                end
-            end
-            print "\n"
-        end
-    end
-    print "\nWould you like to save the schedule as a CSV? Enter 'Y' for Yes or 'N' for No: "
-    while true
-        response = gets.chomp()
-        if response.downcase == "y"
-            print "\n"
-            print "What would you like to name the file? (End file name with \".csv\"): "
-            while 
-                name = gets.chomp()
-                if name.end_with?(".csv") == true
-                    CSV.open(name, "w") do |csv|
-                        csv << outputAttributes
-                        for element in 0 .. arr.length-1
-                            csv << arr[element]
-                        end
-                    end
-                    currDir = Dir.getwd
-                    print "\n\"" + name + "\" has been saved to " + currDir + "\n"
-                    exit
-                else
-                    print "\nFile name entered did not end with \".csv\"\nPlease try again.\n\n"
-                    print "What would you like to name the file? (End file name with \".csv\"): "
-                end
-            end
-        elsif response.downcase == "n"
-            exit
-        else
-            "\nResponse not understood.\nIf you would like to save the schedule as a CSV, enter 'Y' for Yes or 'N' for No: "
-        end
-    end
+  non_csv_formatted_schedule = schedule(users_preference, tcnj)
+  csv_formatted_schedule = format_for_output_csv(non_csv_formatted_schedule, output_attributes)
+  output_attributes = make_output_csv_attributes2(output_attributes)
 
+  print_schedule(output_attributes, csv_formatted_schedule)
+  prompt_file_save(output_attributes, csv_formatted_schedule)
 end
 
-main()
+make_schedule()
