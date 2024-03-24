@@ -1,4 +1,4 @@
-require "time"
+imrequire "time"
 
 unacceptableChars = []
 for ascii in 0 .. 128

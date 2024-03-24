@@ -1,30 +1,30 @@
 class UserPreferences
-  def initialize(evD, stT, dur, dur2, att)
-    @eventDate = evD
-    @startTime = stT
-    @duration = dur
-    @duration2 = dur2
-    @attendees = att
+  def initialize(event_date, start_time, duration, duartion_hours_minutes_array, attendees)
+    @event_date = event_date
+    @start_time = start_time
+    @duration = duration
+    @duartion_hours_minutes_array = duartion_hours_minutes_array
+    @attendees = attendees
   end
 
   # getters
-  def getEventDate
-    @eventDate
+  def get_event_date
+    @event_date
   end
 
-  def getStartTime
-    @startTime
+  def get_start_time
+    @start_time
   end
 
-  def getDuration
+  def get_duration
     @duration
   end
 
-  def getDuration2
-    @duration2
+  def get_duartion_hours_minutes_array
+    @duartion_hours_minutes_array
   end
 
-  def getAttendees
+  def get_attendees
     @attendees
   end
 
