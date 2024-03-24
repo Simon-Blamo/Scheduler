@@ -1,4 +1,4 @@
-require './Handle_Conflicts.rb'
+require './HandleConflicts.rb'
 require './Campus.rb'
 require './UserPreferences.rb'
 
@@ -297,7 +297,7 @@ def get_user_preferences()
         attendees = gets.chomp()
         result = value_given_is_valid_numeric(attendees, false)
         if result == false
-            print "Attendess number, " + attendees + "\", not valid.\n\n"
+            print "Attendees number,\"" + attendees + "\", not valid.\n\n"
             print "Enter the expected number of attendees (e.g., 25): "
         else
             attendees = result
